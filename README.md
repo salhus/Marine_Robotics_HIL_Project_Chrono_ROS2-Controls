@@ -423,7 +423,7 @@ writes directly to the effort controller's command topic.
 | `ki` | `double` | `0.01` | Integral gain |
 | `kd` | `double` | `0.0` | Derivative gain |
 | `kff` | `double` | `0.40` | Velocity feedforward gain (suppressed when `kp = 0`) |
-| `kaff` | `double` | `0.20` | Acceleration feedforward gain (suppressed when `kp = 0`) |
+| `kaff` | `double` | `0.0` | Acceleration feedforward gain (suppressed when `kp = 0`) |
 | `torque_limit_nm` | `double` | `0.40` | Output torque saturation limit (N·m) |
 | `integral_limit` | `double` | `0.0` | Integral accumulator clamp. Must be positive to enable the integrator. |
 | `deadband_rad_s` | `double` | `0.0` | Velocity error deadband — errors smaller than this are treated as zero |

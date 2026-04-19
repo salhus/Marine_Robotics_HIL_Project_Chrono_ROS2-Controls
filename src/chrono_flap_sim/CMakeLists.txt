@@ -32,15 +32,25 @@ ament_target_dependencies(chrono_flap_node
 )
 
 # ── Optional 3D visualization ──────────────────────────────────────────────────────────────────
-# Prefer VSG (Vulkan Scene Graph), fall back to Irrlicht, otherwise headless.
+# chrono/ChConfig.h (included by chrono_flap_node.cpp) is the authoritative source for
+# CHRONO_VSG / CHRONO_IRRLICHT macros — do NOT set them via target_compile_definitions.
+# We only need to link the visualization libraries and, for VSG, pull in vsg include paths.
 if(TARGET Chrono_vsg)
   message(STATUS "chrono_flap_sim: Chrono VSG found — enabling VSG visualization")
+  # VSG headers are not transitively propagated by Chrono_vsg on all systems,
+  # so find_package explicitly to obtain the vsg:: imported targets with their include dirs.
+  find_package(vsg QUIET)
+  find_package(vsgXchange QUIET)
   target_link_libraries(chrono_flap_node Chrono_vsg)
-  target_compile_definitions(chrono_flap_node PRIVATE CHRONO_VSG)
+  if(TARGET vsg::vsg)
+    target_link_libraries(chrono_flap_node vsg::vsg)
+  endif()
+  if(TARGET vsgXchange::vsgXchange)
+    target_link_libraries(chrono_flap_node vsgXchange::vsgXchange)
+  endif()
 elseif(TARGET Chrono_irrlicht)
   message(STATUS "chrono_flap_sim: Chrono Irrlicht found — enabling Irrlicht visualization")
   target_link_libraries(chrono_flap_node Chrono_irrlicht)
-  target_compile_definitions(chrono_flap_node PRIVATE CHRONO_IRRLICHT)
 else()
   message(STATUS "chrono_flap_sim: No Chrono visualization module found — running headless")
 endif()

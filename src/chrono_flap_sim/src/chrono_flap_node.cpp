@@ -48,6 +48,7 @@
 #include "chrono/physics/ChLinkMotorRotationTorque.h"
 #include "chrono/functions/ChFunctionSetpoint.h"
 #include "chrono/assets/ChVisualShapeBox.h"
+#include "chrono/ChConfig.h"
 
 // Visualization (optional — conditional compilation)
 #if defined(CHRONO_VSG)

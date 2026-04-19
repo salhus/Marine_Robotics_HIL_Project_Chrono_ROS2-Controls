@@ -1,10 +1,14 @@
 // chrono_flap_node.cpp
-//
+
 // ChronoFlapNode - ROS 2 node running a Project Chrono simulation of a motor-driven flap.
 // Uses a manual simulation loop so VSG rendering happens on the main thread.
 //
 // The revolute joint axis is Y, so the flap swings in the XZ plane under gravity
 // (pendulum behaviour). External torque from the effort controller drives the flap.
+//
+// The publish rate (rate_hz, default 100 Hz) matches the hardware control loop.
+// The solver runs at solver_rate_hz (default 1000 Hz) internally for numerical stability,
+// taking multiple sub-steps per publish tick.
 #include <chrono>
 #include <cmath>
 #include <functional>
@@ -45,18 +49,25 @@ public:
     sim_acceleration_(0.0)
   {
     this->declare_parameter<double>("rate_hz", 100.0);
+    this->declare_parameter<double>("solver_rate_hz", 1000.0);
     this->declare_parameter<double>("flap_length_m", 0.3);
     this->declare_parameter<double>("flap_mass_kg", 0.05);
-    this->declare_parameter<double>("joint_damping", 0.001);
+    this->declare_parameter<double>("joint_damping", 0.0001);
     this->declare_parameter<std::string>("effort_topic", "/motor_effort_controller/commands");
     this->declare_parameter<bool>("enable_visualization", true);
-    rate_hz_       = this->get_parameter("rate_hz").as_double();
-    flap_length_   = this->get_parameter("flap_length_m").as_double();
-    flap_mass_     = this->get_parameter("flap_mass_kg").as_double();
-    joint_damping_ = this->get_parameter("joint_damping").as_double();
-    effort_topic_  = this->get_parameter("effort_topic").as_string();
-    enable_vis_    = this->get_parameter("enable_visualization").as_bool();
-    dt_ = (rate_hz_ > 0.0) ? (1.0 / rate_hz_) : 0.01;
+    rate_hz_        = this->get_parameter("rate_hz").as_double();
+    solver_rate_hz_ = this->get_parameter("solver_rate_hz").as_double();
+    flap_length_    = this->get_parameter("flap_length_m").as_double();
+    flap_mass_      = this->get_parameter("flap_mass_kg").as_double();
+    joint_damping_  = this->get_parameter("joint_damping").as_double();
+    effort_topic_   = this->get_parameter("effort_topic").as_string();
+    enable_vis_     = this->get_parameter("enable_visualization").as_bool();
+    // Publish interval (wall-clock pacing)
+    publish_dt_ = (rate_hz_ > 0.0) ? (1.0 / rate_hz_) : 0.01;
+    // Solver timestep (internal sub-stepping)
+    solver_dt_ = (solver_rate_hz_ > 0.0) ? (1.0 / solver_rate_hz_) : 0.001;
+    // Number of solver sub-steps per publish tick (at least 1)
+    substeps_ = std::max(1, static_cast<int>(std::round(publish_dt_ / solver_dt_)));
     build_chrono_system();
     effort_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
       effort_topic_,
@@ -79,8 +90,9 @@ public:
       });
     RCLCPP_INFO(
       this->get_logger(),
-      "ChronoFlapNode started: rate=%.1f Hz, dt=%.4f s, flap=%.3f m / %.4f kg, damping=%.4f",
-      rate_hz_, dt_, flap_length_, flap_mass_, joint_damping_);
+      "ChronoFlapNode started: publish=%.0f Hz, solver=%.0f Hz (%d substeps), "
+      "flap=%.3f m / %.4f kg, damping=%.4f",
+      rate_hz_, solver_rate_hz_, substeps_, flap_length_, flap_mass_, joint_damping_);
   }
   void run()
   {
@@ -91,7 +103,7 @@ public:
     }
     using clock = std::chrono::steady_clock;
     const auto step_duration = std::chrono::duration_cast<clock::duration>(
-      std::chrono::duration<double>(dt_));
+      std::chrono::duration<double>(publish_dt_));
     while (rclcpp::ok()) {
       auto t_start = clock::now();
       rclcpp::spin_some(this->shared_from_this());
@@ -106,13 +118,17 @@ public:
         }
 #endif
       }
-      const double damped_torque = latest_torque_ - joint_damping_ * sim_velocity_;
-      torque_fn_->SetSetpoint(damped_torque, sys_->GetChTime());
+      // Record velocity before sub-stepping for acceleration estimate
       const double vel_before = sim_velocity_;
-      sys_->DoStepDynamics(dt_);
+      // Run solver sub-steps
+      for (int i = 0; i < substeps_; ++i) {
+        const double damped_torque = latest_torque_ - joint_damping_ * motor_link_->GetMotorAngleDt();
+        torque_fn_->SetSetpoint(damped_torque, sys_->GetChTime());
+        sys_->DoStepDynamics(solver_dt_);
+      }
       sim_position_ = motor_link_->GetMotorAngle();
       sim_velocity_ = motor_link_->GetMotorAngleDt();
-      sim_acceleration_ = (sim_velocity_ - vel_before) / dt_;
+      sim_acceleration_ = (sim_velocity_ - vel_before) / publish_dt_;
       publish_kinematics();
       auto elapsed = clock::now() - t_start;
       if (elapsed < step_duration) {
@@ -201,7 +217,8 @@ private:
     flap_->SetPosDt(ChVector3d(0.0, 0.0, 0.0));
     flap_->SetAngVelParent(ChVector3d(0.0, 0.0, 0.0));
   }
-  static inline const std::set<std::string> kImmutableParams = {"rate_hz", "effort_topic"};
+  static inline const std::set<std::string> kImmutableParams = {
+    "rate_hz", "solver_rate_hz", "effort_topic"};
   rcl_interfaces::msg::SetParametersResult on_validate_parameters(
     const std::vector<rclcpp::Parameter> & parameters)
   {
@@ -255,18 +272,24 @@ private:
     vel_pub_->publish(vel_msg);
     accel_pub_->publish(accel_msg);
   }
+  // Parameters
   double      rate_hz_{100.0};
-  double      dt_{0.01};
+  double      solver_rate_hz_{1000.0};
+  double      publish_dt_{0.01};
+  double      solver_dt_{0.001};
+  int         substeps_{10};
   double      flap_length_{0.3};
   double      flap_mass_{0.05};
-  double      joint_damping_{0.001};
+  double      joint_damping_{0.0001};
   std::string effort_topic_{"/motor_effort_controller/commands"};
   bool        enable_vis_{true};
   bool        vis_active_{false};
+  // Runtime state
   double latest_torque_;
   double sim_position_;
   double sim_velocity_;
   double sim_acceleration_;
+  // Chrono objects
   std::unique_ptr<ChSystemNSC>                   sys_;
   std::shared_ptr<ChBody>                        ground_;
   std::shared_ptr<ChBody>                        flap_;
@@ -276,10 +299,12 @@ private:
 #if defined(CHRONO_VSG) || defined(CHRONO_IRRLICHT)
   std::shared_ptr<ChVisualSystem>                vis_;
 #endif
+  // ROS interfaces
   rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr effort_sub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              pos_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              vel_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              accel_pub_;
+  // Parameter callback handles
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr   on_set_handle_;
   rclcpp::node_interfaces::PostSetParametersCallbackHandle::SharedPtr post_set_handle_;
 };

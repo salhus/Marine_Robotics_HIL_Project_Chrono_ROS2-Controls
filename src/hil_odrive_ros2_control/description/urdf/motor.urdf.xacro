@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="odrive_wec_dyno">
+
+  <!-- Minimal kinematic tree -->
+  <link name="base_link"/>
+  <link name="motor_link"/>
+  <joint name="motor_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="motor_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- PTO motor (axis1) — same shaft as motor_joint, passive linear damper -->
+  <link name="pto_link"/>
+  <joint name="pto_joint" type="continuous">
+    <parent link="motor_link"/>
+    <child link="pto_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ros2_control hardware — both axes on the same ODrive board / CAN bus -->
+  <ros2_control name="ODriveSystem" type="system">
+    <hardware>
+      <plugin>odrive_ros2_control_plugin/ODriveHardwareInterface</plugin>
+      <!-- CAN interface name -->
+      <param name="can">can0</param>
+    </hardware>
+
+    <!-- Motor 1: Hydro Emulator (ODrive axis0, node_id=0) -->
+    <joint name="motor_joint">
+      <param name="node_id">0</param>
+
+      <!-- Command interfaces the hardware plugin exports -->
+      <command_interface name="effort"/>
+      <command_interface name="velocity"/>
+      <command_interface name="position"/>
+
+      <!-- State interfaces the hardware plugin exports -->
+      <state_interface name="effort"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="electrical_power"/>
+      <state_interface name="mechanical_power"/>
+    </joint>
+
+    <!-- Motor 2: PTO / Power Take-Off (ODrive axis1, node_id=1) -->
+    <joint name="pto_joint">
+      <param name="node_id">1</param>
+
+      <!-- Command interfaces the hardware plugin exports -->
+      <command_interface name="effort"/>
+      <command_interface name="velocity"/>
+      <command_interface name="position"/>
+
+      <!-- State interfaces the hardware plugin exports -->
+      <state_interface name="effort"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="electrical_power"/>
+      <state_interface name="mechanical_power"/>
+    </joint>
+  </ros2_control>
+
+</robot>

@@ -13,10 +13,13 @@
     </visual>
   </link>
 
+  <!-- 30cm wide x 0.25cm thick x 30cm tall acrylic flap (width x thickness x height) -->
+  <!-- CoM is at z=0.15 (half of 0.30m height) above the joint origin -->
   <link name="motor_link">
     <visual>
       <origin xyz="0 0 0.15" rpy="0 0 0"/>
       <geometry>
+        <!-- size: x=0.30m (width), y=0.0025m (thickness), z=0.30m (height) -->
         <box size="0.30 0.0025 0.30"/>
       </geometry>
       <material name="acrylic_blue">
@@ -24,6 +27,9 @@
       </material>
     </visual>
     <inertial>
+      <!-- Inertia at CoM (z=0.15 above joint). Using thin-rod approximation along z-axis:
+           I_swing_pivot = (1/3)*m*L^2 = (1/3)*0.5*0.09 = 0.015
+           I_swing_com   = I_swing_pivot - m*(L/2)^2 = 0.015 - 0.01125 = 0.00375 -->
       <origin xyz="0 0 0.15"/>
       <mass value="0.5"/>
       <inertia ixx="0.015" ixy="0" ixz="0" iyy="0.00375" iyz="0" izz="0.000015"/>

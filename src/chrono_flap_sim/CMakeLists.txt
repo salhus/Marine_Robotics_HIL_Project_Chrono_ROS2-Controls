@@ -31,6 +31,20 @@ ament_target_dependencies(chrono_flap_node
   std_msgs
 )
 
+# ── Optional 3D visualization ──────────────────────────────────────────────────────────────────
+# Prefer VSG (Vulkan Scene Graph), fall back to Irrlicht, otherwise headless.
+if(TARGET Chrono_vsg)
+  message(STATUS "chrono_flap_sim: Chrono VSG found — enabling VSG visualization")
+  target_link_libraries(chrono_flap_node Chrono_vsg)
+  target_compile_definitions(chrono_flap_node PRIVATE CHRONO_VSG)
+elseif(TARGET Chrono_irrlicht)
+  message(STATUS "chrono_flap_sim: Chrono Irrlicht found — enabling Irrlicht visualization")
+  target_link_libraries(chrono_flap_node Chrono_irrlicht)
+  target_compile_definitions(chrono_flap_node PRIVATE CHRONO_IRRLICHT)
+else()
+  message(STATUS "chrono_flap_sim: No Chrono visualization module found — running headless")
+endif()
+
 install(TARGETS chrono_flap_node
   DESTINATION lib/${PROJECT_NAME}
 )

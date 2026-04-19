@@ -6,6 +6,9 @@ flap about a revolute joint. The node subscribes to the same effort/torque topic
 publishes simulated kinematics so you can compare **desired**, **motor**, and **simulated**
 kinematics side-by-side in PlotJuggler.
 
+An optional real-time 3D visualization window shows the flap body rotating about the revolute
+joint (requires a Chrono build with VSG or Irrlicht support; see [Building](#building) below).
+
 ## Published topics
 
 All topics are namespaced under `~/` (i.e. `/<node_name>/`):
@@ -24,28 +27,36 @@ All topics are namespaced under `~/` (i.e. `/<node_name>/`):
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `amplitude_rad_s` | double | `0.0` | Sine trajectory amplitude (mirrors `velocity_pid_node`) |
-| `omega_rad_s` | double | `0.0` | Sine trajectory angular frequency (mirrors `velocity_pid_node`) |
-| `rate_hz` | double | `100.0` | Simulation step rate (Hz) |
-| `flap_length_m` | double | `0.3` | Flap length (m) |
-| `flap_mass_kg` | double | `0.05` | Flap mass (kg) |
-| `joint_damping` | double | `0.001` | Revolute joint viscous damping coefficient (N·m·s/rad) |
-| `effort_topic` | string | `/motor_effort_controller/commands` | Topic to subscribe for torque |
+| Parameter | Type | Default | Reconfigurable | Description |
+|---|---|---|---|---|
+| `rate_hz` | double | `100.0` | ✗ (restart required) | Simulation step rate (Hz) |
+| `effort_topic` | string | `/motor_effort_controller/commands` | ✗ (restart required) | Topic to subscribe for torque |
+| `flap_length_m` | double | `0.3` | ✓ | Flap length (m) — updates inertia and CoM in-place; resets flap to home |
+| `flap_mass_kg` | double | `0.05` | ✓ | Flap mass (kg) — updates inertia in-place |
+| `joint_damping` | double | `0.001` | ✓ | Revolute joint viscous damping coefficient (N·m·s/rad) |
+
+> **Note:** `amplitude_rad_s` and `omega_rad_s` (trajectory parameters) belong exclusively to
+> `velocity_pid_node`, which outputs torque to `/motor_effort_controller/commands`.  The
+> `chrono_flap_node` consumes that torque directly and does not need its own trajectory params.
 
 ## Prerequisites
 
-* [Project Chrono](https://projectchrono.org) — core library only (`ChronoEngine`).
+* [Project Chrono](https://projectchrono.org) — core library (`ChronoEngine`).
+  Optional: VSG (`Chrono_vsg`) or Irrlicht (`Chrono_irrlicht`) module for 3D visualization.
 * ROS 2 Jazzy (or compatible).
 
 ## Building
 
 ```bash
-# Make sure Chrono is installed and ChronoConfig.cmake is findable.
-# If it is not on CMake's default path, pass -DChronoConfig_DIR:
+# Headless (core only — always works):
+colcon build --packages-select chrono_flap_sim
+
+# With VSG visualization (if Chrono was built with VSG support):
 colcon build --packages-select chrono_flap_sim \
   --cmake-args -DChronoConfig_DIR=/path/to/chrono/lib/cmake/Chrono
+
+# CMakeLists.txt automatically detects Chrono_vsg / Chrono_irrlicht targets and
+# adds the appropriate compile definition (CHRONO_VSG or CHRONO_IRRLICHT).
 ```
 
 ## Usage
@@ -59,6 +70,9 @@ ros2 run chrono_flap_sim chrono_flap_node --ros-args \
   -p flap_mass_kg:=0.05 \
   -p joint_damping:=0.001
 ```
+
+Physical model parameters (`flap_length_m`, `flap_mass_kg`, `joint_damping`) can be tuned at
+runtime via `rqt_reconfigure` without restarting the node.
 
 ## PlotJuggler comparison
 

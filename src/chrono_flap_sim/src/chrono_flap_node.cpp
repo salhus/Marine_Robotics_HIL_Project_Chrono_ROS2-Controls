@@ -1,10 +1,7 @@
 // chrono_flap_node.cpp
-
-// ChronoFlapNode - ROS 2 node that runs a Project Chrono multibody simulation of a motor
-driving a rigid flap about a revolute joint.
-
-// Uses a manual simulation loop (not rclcpp::spin) so that VSG rendering
-// happens on the main thread, avoiding segfaults.
+//
+// ChronoFlapNode - ROS 2 node running a Project Chrono simulation of a motor-driven flap.
+// Uses a manual simulation loop so VSG rendering happens on the main thread.
 
 #include <chrono>
 #include <cmath>
@@ -37,7 +34,6 @@ driving a rigid flap about a revolute joint.
 
 using namespace chrono;
 
-// Visual shape constants
 static constexpr double kFlapVisHeight   = 0.02;
 static constexpr double kFlapVisDepth    = 0.01;
 static constexpr double kPivotMarkerSize = 0.04;
@@ -52,7 +48,6 @@ public:
     sim_velocity_(0.0),
     sim_acceleration_(0.0)
   {
-    // Parameters
     this->declare_parameter<double>("rate_hz", 100.0);
     this->declare_parameter<double>("flap_length_m", 0.3);
     this->declare_parameter<double>("flap_mass_kg", 0.05);
@@ -67,10 +62,8 @@ public:
 
     dt_ = (rate_hz_ > 0.0) ? (1.0 / rate_hz_) : 0.01;
 
-    // Build Chrono system
     build_chrono_system();
 
-    // ROS interfaces
     effort_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
       effort_topic_,
       rclcpp::SensorDataQoS(),
@@ -84,7 +77,6 @@ public:
     vel_pub_   = this->create_publisher<std_msgs::msg::Float64>("~/sim_velocity",     10);
     accel_pub_ = this->create_publisher<std_msgs::msg::Float64>("~/sim_acceleration", 10);
 
-    // Parameter callbacks
     on_set_handle_ = this->add_on_set_parameters_callback(
       [this](const std::vector<rclcpp::Parameter> & params) {
         return on_validate_parameters(params);
@@ -100,7 +92,6 @@ public:
       rate_hz_, dt_, flap_length_, flap_mass_, joint_damping_);
   }
 
-  // Run the simulation loop (called from main, NOT from rclcpp::spin).
   void run()
   {
     init_visualization();
@@ -112,10 +103,8 @@ public:
     while (rclcpp::ok()) {
       auto t_start = clock::now();
 
-      // Process ROS callbacks (subscriptions, parameter changes)
       rclcpp::spin_some(this->shared_from_this());
 
-      // Render
 #if defined(CHRONO_VSG) || defined(CHRONO_IRRLICHT)
       if (vis_) {
         if (!vis_->Run())
@@ -126,7 +115,6 @@ public:
       }
 #endif
 
-      // Apply damping
       const double damped_torque = latest_torque_ - joint_damping_ * sim_velocity_;
       torque_fn_->SetSetpoint(damped_torque, sys_->GetChTime());
 
@@ -139,7 +127,6 @@ public:
 
       publish_kinematics();
 
-      // Pace to real time
       auto elapsed = clock::now() - t_start;
       if (elapsed < step_duration) {
         std::this_thread::sleep_for(step_duration - elapsed);
@@ -167,7 +154,7 @@ private:
     sys_->AddBody(flap_);
 
     motor_link_ = std::make_shared<ChLinkMotorRotationTorque>();
-    torque_fn_  = std::make_shared<ChFunctionSetpoint();
+    torque_fn_  = std::make_shared<ChFunctionSetpoint>();
     motor_link_->SetTorqueFunction(torque_fn_);
 
     ChFrame<> pivot_frame(ChVector3d(0, 0, 0), QuatFromAngleX(0));
@@ -221,27 +208,21 @@ private:
   {
     rcl_interfaces::msg::SetParametersResult result;
     result.successful = true;
-
     for (const auto & param : parameters) {
       if (kImmutableParams.count(param.get_name())) {
         result.successful = false;
-        result.reason = "Parameter '" + param.get_name() +
-          "' cannot be changed at runtime (requires node restart).";
+        result.reason = "Parameter '" + param.get_name() + "' cannot be changed at runtime.";
         return result;
       }
       if (param.get_name() == "flap_length_m" || param.get_name() == "flap_mass_kg") {
-        if (param.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE ||
-            param.as_double() <= 0.0)
-        {
+        if (param.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE || param.as_double() <= 0.0) {
           result.successful = false;
           result.reason = param.get_name() + " must be a positive double.";
           return result;
         }
       }
       if (param.get_name() == "joint_damping") {
-        if (param.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE ||
-            param.as_double() < 0.0)
-        {
+        if (param.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE || param.as_double() < 0.0) {
           result.successful = false;
           result.reason = "joint_damping must be non-negative.";
           return result;
@@ -254,34 +235,16 @@ private:
   void on_apply_parameters(const std::vector<rclcpp::Parameter> & parameters)
   {
     bool body_needs_update = false;
-
     for (const auto & param : parameters) {
-      if (param.get_name() == "flap_length_m") {
-        flap_length_ = param.as_double();
-        body_needs_update = true;
-        RCLCPP_INFO(this->get_logger(), "Parameter updated: flap_length_m = %.4f", flap_length_);
-      } else if (param.get_name() == "flap_mass_kg") {
-        flap_mass_ = param.as_double();
-        body_needs_update = true;
-        RCLCPP_INFO(this->get_logger(), "Parameter updated: flap_mass_kg = %.4f", flap_mass_);
-      } else if (param.get_name() == "joint_damping") {
-        joint_damping_ = param.as_double();
-        RCLCPP_INFO(this->get_logger(), "Parameter updated: joint_damping = %.4f", joint_damping_);
-      }
+      if (param.get_name() == "flap_length_m") { flap_length_ = param.as_double(); body_needs_update = true; }
+      else if (param.get_name() == "flap_mass_kg") { flap_mass_ = param.as_double(); body_needs_update = true; }
+      else if (param.get_name() == "joint_damping") { joint_damping_ = param.as_double(); }
     }
-
     if (body_needs_update) {
       update_flap_inertia();
-      if (flap_->GetVisualModel()) {
-        flap_->GetVisualModel()->Clear();
-      }
-      flap_vis_shape_ = std::make_shared<ChVisualShapeBox>(
-        flap_length_, kFlapVisHeight, kFlapVisDepth);
+      if (flap_->GetVisualModel()) { flap_->GetVisualModel()->Clear(); }
+      flap_vis_shape_ = std::make_shared<ChVisualShapeBox>(flap_length_, kFlapVisHeight, kFlapVisDepth);
       flap_->AddVisualShape(flap_vis_shape_);
-      RCLCPP_INFO(
-        this->get_logger(),
-        "Flap body updated: length=%.4f m, mass=%.4f kg - state reset to home position.",
-        flap_length_, flap_mass_);
     }
   }
 
@@ -296,7 +259,6 @@ private:
     accel_pub_->publish(accel_msg);
   }
 
-  // Parameters
   double      rate_hz_{100.0};
   double      dt_{0.01};
   double      flap_length_{0.3};
@@ -304,13 +266,11 @@ private:
   double      joint_damping_{0.001};
   std::string effort_topic_{"/motor_effort_controller/commands"};
 
-  // Runtime state
   double latest_torque_;
   double sim_position_;
   double sim_velocity_;
   double sim_acceleration_;
 
-  // Chrono objects
   std::unique_ptr<ChSystemNSC>                   sys_;
   std::shared_ptr<ChBody>                        ground_;
   std::shared_ptr<ChBody>                        flap_;
@@ -318,18 +278,15 @@ private:
   std::shared_ptr<ChFunctionSetpoint>            torque_fn_;
   std::shared_ptr<ChVisualShapeBox>              flap_vis_shape_;
 
-  // Visualization
 #if defined(CHRONO_VSG) || defined(CHRONO_IRRLICHT)
   std::shared_ptr<ChVisualSystem>                vis_;
 #endif
 
-  // ROS interfaces
   rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr effort_sub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              pos_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              vel_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              accel_pub_;
 
-  // Parameter callback handles
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr   on_set_handle_;
   rclcpp::node_interfaces::PostSetParametersCallbackHandle::SharedPtr post_set_handle_;
 };

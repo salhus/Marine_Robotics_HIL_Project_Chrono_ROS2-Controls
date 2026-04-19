@@ -37,11 +37,14 @@
 #include "chrono/functions/ChFunctionSetpoint.h"
 #include "chrono/assets/ChVisualShapeBox.h"
 #include "chrono/ChConfig.h"
-// Visualization (optional - conditional compilation)
-#if defined(CHRONO_VSG)
+// Visualization (optional - conditional compilation).
+// Use CHRONO_FLAP_USE_VSG / CHRONO_FLAP_USE_IRRLICHT (set by our CMakeLists.txt)
+// instead of CHRONO_VSG / CHRONO_IRRLICHT so that the guards are decoupled from
+// whatever Chrono's cmake config injects via its imported targets.
+#if defined(CHRONO_FLAP_USE_VSG)
 #  include "chrono_vsg/ChVisualSystemVSG.h"
    using namespace chrono::vsg3d;
-#elif defined(CHRONO_IRRLICHT)
+#elif defined(CHRONO_FLAP_USE_IRRLICHT)
 #  include "chrono_irrlicht/ChVisualSystemIrrlicht.h"
    using namespace chrono::irrlicht;
 #endif
@@ -160,7 +163,7 @@ public:
       auto t_start = clock::now();
       rclcpp::spin_some(this->shared_from_this());
       if (vis_active_) {
-#if defined(CHRONO_VSG) || defined(CHRONO_IRRLICHT)
+#if defined(CHRONO_FLAP_USE_VSG) || defined(CHRONO_FLAP_USE_IRRLICHT)
         if (vis_) {
           if (!vis_->Run())
             break;
@@ -225,7 +228,7 @@ private:
   }
   void init_visualization()
   {
-#if defined(CHRONO_VSG)
+#if defined(CHRONO_FLAP_USE_VSG)
     try {
       auto vis = chrono_types::make_shared<ChVisualSystemVSG>();
       vis->AttachSystem(sys_.get());
@@ -245,7 +248,7 @@ private:
         "VSG initialization failed (unknown error) - falling back to headless.");
       vis_active_ = false;
     }
-#elif defined(CHRONO_IRRLICHT)
+#elif defined(CHRONO_FLAP_USE_IRRLICHT)
     try {
       auto vis = chrono_types::make_shared<ChVisualSystemIrrlicht>();
       vis->SetWindowSize(800, 600);
@@ -393,7 +396,7 @@ private:
   std::shared_ptr<ChLinkMotorRotationTorque>     motor_link_;
   std::shared_ptr<ChFunctionSetpoint>            torque_fn_;
   std::shared_ptr<ChVisualShapeBox>              flap_vis_shape_;
-#if defined(CHRONO_VSG) || defined(CHRONO_IRRLICHT)
+#if defined(CHRONO_FLAP_USE_VSG) || defined(CHRONO_FLAP_USE_IRRLICHT)
   std::shared_ptr<ChVisualSystem>                vis_;
 #endif
   // ROS interfaces

@@ -2,10 +2,10 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>chrono_flap_sim</name>
-  <version>0.1.0</version>
-  <description>Project Chrono motor+flap simulation node for ROS 2. Subscribes to effort/torque
-  commands, simulates a rigid flap driven by a revolute joint, and publishes simulated kinematics
-  for comparison with desired and measured kinematics in PlotJuggler.</description>
+  <version>0.2.0</version>
+  <description>Project Chrono motor+flap simulation node for ROS 2. Supports SIL (software-in-the-loop)
+  and parallel modes. In SIL mode the node publishes sensor_msgs/JointState so the PID closes the
+  loop through the simulation. In parallel mode the node shadows the real hardware for comparison.</description>
   <maintainer email="todo@example.com">Maintainer</maintainer>
   <license>Apache-2.0</license>
 
@@ -13,6 +13,7 @@
 
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

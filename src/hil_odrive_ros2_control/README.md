@@ -420,7 +420,7 @@ ros2 param set /velocity_pid_node control_mode cascade
 | `ki` | double | `0.01` | Inner-loop integral gain |
 | `kd` | double | `0.0` | Inner-loop derivative gain |
 | `kff` | double | `0.40` | Velocity feedforward gain (suppressed when `kp=0`) |
-| `kaff` | double | `0.20` | Acceleration feedforward gain (suppressed when `kp=0`) |
+| `kaff` | double | `0.0` | Acceleration feedforward gain (suppressed when `kp=0`) |
 | `torque_limit_nm` | double | `0.40` | Output torque saturation limit (N·m) |
 | `integral_limit` | double | `0.0` | Inner-loop integral clamp. Must be positive to take effect. |
 | `deadband_rad_s` | double | `0.0` | Velocity error deadband |

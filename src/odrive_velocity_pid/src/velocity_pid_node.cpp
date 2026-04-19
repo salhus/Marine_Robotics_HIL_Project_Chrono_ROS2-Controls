@@ -104,7 +104,7 @@ public:
       {"ki",                     0.01,   &VelocityPidNode::ki_,                  {},                                      kResetVel},
       {"kd",                     0.00,   &VelocityPidNode::kd_,                  {},                                      kResetVel},
       {"kff",                    0.40,   &VelocityPidNode::kff_,                 {},                                      kResetVel},
-      {"kaff",                   0.20,   &VelocityPidNode::kaff_,                {},                                      kResetVel},
+      {"kaff",                   0.00,   &VelocityPidNode::kaff_,                {},                                      kResetVel},
       // ── Inner loop limits ──────────────────────────────────────────────────────────────────
       {"torque_limit_nm",        0.40,   &VelocityPidNode::torque_limit_nm_,     positive_validator("torque_limit_nm"),   0},
       {"integral_limit",         0.00,   &VelocityPidNode::integral_limit_,      positive_validator("integral_limit"),    0},

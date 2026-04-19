@@ -76,6 +76,18 @@ def generate_launch_description():
         output="both",
     )
 
+    velocity_pid_node = Node(
+        package="odrive_velocity_pid",
+        executable="velocity_pid_node",
+        name="velocity_pid_node",
+        parameters=[{
+            "control_mode": "cascade",
+            "amplitude_rad_s": 0.25,
+            "omega_rad_s": 0.25,
+        }],
+        output="both",
+    )
+
     chrono_flap_node = Node(
         package="chrono_flap_sim",
         executable="chrono_flap_node",
@@ -92,6 +104,7 @@ def generate_launch_description():
             joint_state_broadcaster_spawner,
             effort_controller_spawner,
             pto_controller_spawner,
+            velocity_pid_node,
             chrono_flap_node,
         ]
     )

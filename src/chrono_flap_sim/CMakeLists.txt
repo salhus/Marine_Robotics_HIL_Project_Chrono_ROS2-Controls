@@ -21,6 +21,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Chrono REQUIRED)
 
@@ -82,6 +83,7 @@ target_link_libraries(chrono_flap_node ${LIBS})
 ament_target_dependencies(chrono_flap_node
   rclcpp
   std_msgs
+  sensor_msgs
 )
 
 install(TARGETS chrono_flap_node

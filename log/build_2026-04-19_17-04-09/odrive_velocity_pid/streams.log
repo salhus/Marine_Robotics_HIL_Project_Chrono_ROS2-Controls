@@ -1,0 +1,48 @@
+[0.007s] Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_velocity_pid -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid
+[0.011s] [0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+[0.011s]   Compatibility with CMake < 3.10 will be removed from a future version of
+[0.011s]   CMake.
+[0.011s] 
+[0.011s]   Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+[0.012s]   to tell CMake that the project requires at least <min> but has been updated
+[0.012s]   to work with policies introduced by <max> or earlier.
+[0.012s] 
+[0.012s] [0m
+[0.018s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.258s] -- Found rclcpp: 28.1.18 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.279s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.286s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.295s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.305s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.378s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.380s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.455s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.535s] -- Found sensor_msgs: 5.3.7 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+[0.677s] -- Configuring done (0.7s)
+[0.692s] -- Generating done (0.0s)
+[0.695s] -- Build files have been written to: /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid
+[0.706s] Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_velocity_pid -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid
+[0.707s] Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid -- -j4 -l4
+[0.747s] [100%] Built target velocity_pid_node
+[0.753s] Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid -- -j4 -l4
+[0.758s] Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid
+[0.762s] -- Install configuration: ""
+[0.762s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/lib/odrive_velocity_pid/velocity_pid_node
+[0.762s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/config
+[0.762s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/config/controllers.yaml
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/ament_index/resource_index/package_run_dependencies/odrive_velocity_pid
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/ament_index/resource_index/parent_prefix_path/odrive_velocity_pid
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/environment/ament_prefix_path.sh
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/environment/ament_prefix_path.dsv
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/environment/path.sh
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/environment/path.dsv
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/local_setup.bash
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/local_setup.sh
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/local_setup.zsh
+[0.763s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/local_setup.dsv
+[0.763s] -- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.dsv
+[0.764s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/ament_index/resource_index/packages/odrive_velocity_pid
+[0.764s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/cmake/odrive_velocity_pidConfig.cmake
+[0.764s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/cmake/odrive_velocity_pidConfig-version.cmake
+[0.764s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.xml
+[0.765s] Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid

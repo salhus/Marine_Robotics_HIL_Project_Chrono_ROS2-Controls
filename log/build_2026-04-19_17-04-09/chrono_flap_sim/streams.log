@@ -1,0 +1,56 @@
+[0.009s] Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/chrono_flap_sim -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim
+[0.017s] -- chrono_flap_sim: GCC <14 detected, disabling std::format to work around bug
+[0.017s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.183s] -- Found rclcpp: 28.1.18 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.207s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.218s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.232s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.243s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.292s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.293s] -- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.346s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.394s] -- Found std_msgs: 5.3.7 (/opt/ros/jazzy/share/std_msgs/cmake)
+[0.404s] -- Found sensor_msgs: 5.3.7 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+[0.433s] -- Chrono package prefix directory: /usr/local
+[0.434s] -- Inclusive list of Chrono components: 
+[0.434s] -- Eigen3 found
+[0.436s] -- OpenMP found
+[1.434s] -- MPI found
+[1.434s] -- Requested components
+[1.434s] -- Chrono libraries not found for the debug configuration: ChronoModels_robot;Chrono_core
+[1.434s] -- Configuration summary
+[1.434s] --   CHRONO_TARGETS           (Chrono targets): Chrono::ChronoModels_robot;Chrono::Chrono_core
+[1.434s] --   CHRONO_DATA_DIR          (Path to Chrono data folder): /usr/local/lib/cmake/Chrono/../../../share/chrono/data/
+[1.434s] --   CHRONO_VEHICLE_DATA_DIR  (Path to Chrono::Vehicle data folder): /usr/local/lib/cmake/Chrono/../../../share/chrono/data/vehicle/
+[1.435s] -- chrono_flap_sim: CHRONO_VIS_BACKEND = auto
+[1.435s] -- chrono_flap_sim: Found Chrono_vsg at /usr/local/lib/libChrono_vsg.so
+[1.435s] -- chrono_flap_sim: Found VSG headers at /home/shusain/Packages/vsg/include
+[1.435s] -- chrono_flap_sim: Compiling with CHRONO_FLAP_USE_VSG
+[1.509s] -- Configuring done (1.5s)
+[1.518s] -- Generating done (0.0s)
+[1.519s] -- Build files have been written to: /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim
+[1.528s] Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim' returned '0': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/chrono_flap_sim -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim
+[1.529s] Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim -- -j4 -l4
+[1.563s] [100%] Built target chrono_flap_node
+[1.566s] Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim' returned '0': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim -- -j4 -l4
+[1.567s] Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim
+[1.570s] -- Install configuration: ""
+[1.570s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/lib/chrono_flap_sim/chrono_flap_node
+[1.570s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/launch
+[1.570s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/launch/sil_mode.launch.py
+[1.570s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/ament_index/resource_index/package_run_dependencies/chrono_flap_sim
+[1.570s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/ament_index/resource_index/parent_prefix_path/chrono_flap_sim
+[1.570s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/environment/ament_prefix_path.sh
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/environment/ament_prefix_path.dsv
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/environment/path.sh
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/environment/path.dsv
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/local_setup.bash
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/local_setup.sh
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/local_setup.zsh
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/local_setup.dsv
+[1.571s] -- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.dsv
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/ament_index/resource_index/packages/chrono_flap_sim
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/cmake/chrono_flap_simConfig.cmake
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/cmake/chrono_flap_simConfig-version.cmake
+[1.571s] -- Up-to-date: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.xml
+[1.572s] Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim' returned '0': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim

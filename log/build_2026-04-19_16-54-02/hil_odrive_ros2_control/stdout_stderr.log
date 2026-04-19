@@ -1,0 +1,49 @@
+[0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter
+-- Configuring done (0.6s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control
+-- Install configuration: ""
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/launch
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/launch/motor_control.launch.py
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/config
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/config/controllers.yaml
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/description
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/description/urdf
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/description/urdf/motor.urdf.xacro
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/ament_index/resource_index/package_run_dependencies/hil_odrive_ros2_control
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/ament_index/resource_index/parent_prefix_path/hil_odrive_ros2_control
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/environment/ament_prefix_path.sh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/environment/ament_prefix_path.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/environment/path.sh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/environment/path.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/local_setup.bash
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/local_setup.sh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/local_setup.zsh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/local_setup.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/ament_index/resource_index/packages/hil_odrive_ros2_control
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/cmake/hil_odrive_ros2_controlConfig.cmake
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/cmake/hil_odrive_ros2_controlConfig-version.cmake
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.xml

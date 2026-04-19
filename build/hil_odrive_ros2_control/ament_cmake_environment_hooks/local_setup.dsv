@@ -1,0 +1,2 @@
+source;share/hil_odrive_ros2_control/environment/ament_prefix_path.sh
+source;share/hil_odrive_ros2_control/environment/path.sh

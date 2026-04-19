@@ -1,0 +1,4 @@
+source;share/hil_odrive_ros2_control/local_setup.bash
+source;share/hil_odrive_ros2_control/local_setup.dsv
+source;share/hil_odrive_ros2_control/local_setup.sh
+source;share/hil_odrive_ros2_control/local_setup.zsh

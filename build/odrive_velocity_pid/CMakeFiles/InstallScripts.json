@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

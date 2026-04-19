@@ -1,0 +1,70 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- chrono_flap_sim: GCC <14 detected, disabling std::format to work around bug
+-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter
+-- Found rclcpp: 28.1.18 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")
+-- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13")
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found std_msgs: 5.3.7 (/opt/ros/jazzy/share/std_msgs/cmake)
+-- Found sensor_msgs: 5.3.7 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+-- Chrono package prefix directory: /usr/local
+-- Inclusive list of Chrono components: 
+-- Eigen3 found
+-- Found OpenMP_CXX: -fopenmp (found version "4.5")
+-- Found OpenMP: TRUE (found version "4.5") found components: CXX
+-- OpenMP found
+-- MPI found
+-- Requested components
+-- Chrono libraries not found for the debug configuration: ChronoModels_robot;Chrono_core
+-- Configuration summary
+--   CHRONO_TARGETS           (Chrono targets): Chrono::ChronoModels_robot;Chrono::Chrono_core
+--   CHRONO_DATA_DIR          (Path to Chrono data folder): /usr/local/lib/cmake/Chrono/../../../share/chrono/data/
+--   CHRONO_VEHICLE_DATA_DIR  (Path to Chrono::Vehicle data folder): /usr/local/lib/cmake/Chrono/../../../share/chrono/data/vehicle/
+-- chrono_flap_sim: CHRONO_VIS_BACKEND = auto
+-- chrono_flap_sim: Found Chrono_vsg at /usr/local/lib/libChrono_vsg.so
+-- chrono_flap_sim: Found VSG headers at /home/shusain/Packages/vsg/include
+-- chrono_flap_sim: Compiling with CHRONO_FLAP_USE_VSG
+-- Configuring done (2.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim
+[ 50%] [32mBuilding CXX object CMakeFiles/chrono_flap_node.dir/src/chrono_flap_node.cpp.o[0m
+[100%] [32m[1mLinking CXX executable chrono_flap_node[0m
+[100%] Built target chrono_flap_node
+-- Install configuration: ""
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/lib/chrono_flap_sim/chrono_flap_node
+-- Set non-toolchain portion of runtime path of "/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/lib/chrono_flap_sim/chrono_flap_node" to ""
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/launch
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/launch/sil_mode.launch.py
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/ament_index/resource_index/package_run_dependencies/chrono_flap_sim
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/ament_index/resource_index/parent_prefix_path/chrono_flap_sim
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/environment/ament_prefix_path.sh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/environment/ament_prefix_path.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/environment/path.sh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/environment/path.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/local_setup.bash
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/local_setup.sh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/local_setup.zsh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/local_setup.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/ament_index/resource_index/packages/chrono_flap_sim
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/cmake/chrono_flap_simConfig.cmake
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/cmake/chrono_flap_simConfig-version.cmake
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.xml

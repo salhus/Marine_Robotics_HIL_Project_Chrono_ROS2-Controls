@@ -1,0 +1,102 @@
+[0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter
+-- Found rclcpp: 28.1.18 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")
+-- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13")
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found ament_cmake_auto: 2.5.6 (/opt/ros/jazzy/share/ament_cmake_auto/cmake)
+[33mCMake Warning (dev) at /opt/ros/jazzy/share/realtime_tools/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package):
+  Policy CMP0167 is not set: The FindBoost module is removed.  Run "cmake
+  --help-policy CMP0167" for policy details.  Use the cmake_policy command to
+  set the policy and suppress this warning.
+
+Call Stack (most recent call first):
+  /opt/ros/jazzy/share/realtime_tools/cmake/realtime_toolsConfig.cmake:41 (include)
+  /opt/ros/jazzy/share/hardware_interface/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /opt/ros/jazzy/share/hardware_interface/cmake/hardware_interfaceConfig.cmake:41 (include)
+  /opt/ros/jazzy/share/ament_cmake_auto/cmake/ament_auto_find_build_dependencies.cmake:67 (find_package)
+  CMakeLists.txt:12 (ament_auto_find_build_dependencies)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+[0m
+-- Configuring done (1.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control
+[ 25%] [32mBuilding CXX object CMakeFiles/odrive_ros2_control_plugin.dir/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_base/src/epoll_event_loop.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/odrive_ros2_control_plugin.dir/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_base/src/socket_can.cpp.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/odrive_ros2_control_plugin.dir/src/odrive_hardware_interface.cpp.o[0m
+In file included from [01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/src/odrive_hardware_interface.cpp:3[m[K:
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/../odrive_base/include/can_simple_messages.hpp:[m[K In member function ‘[01m[Kvoid Estop_msg_t::[01;32m[Kencode_buf[m[K(uint8_t*) const[m[K’:
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/../odrive_base/include/can_simple_messages.hpp:116:30:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kbuf[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  116 |     void encode_buf([01;35m[Kuint8_t* buf[m[K) const {
+      |                     [01;35m[K~~~~~~~~~^~~[m[K
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/../odrive_base/include/can_simple_messages.hpp:[m[K In member function ‘[01m[Kvoid Estop_msg_t::[01;32m[Kdecode_buf[m[K(const uint8_t*)[m[K’:
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/../odrive_base/include/can_simple_messages.hpp:119:36:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kbuf[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  119 |     void decode_buf([01;35m[Kconst uint8_t* buf[m[K) {
+      |                     [01;35m[K~~~~~~~~~~~~~~~^~~[m[K
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/../odrive_base/include/can_simple_messages.hpp:[m[K In member function ‘[01m[Kvoid Enter_DFU_Mode_msg_t::[01;32m[Kencode_buf[m[K(uint8_t*) const[m[K’:
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/../odrive_base/include/can_simple_messages.hpp:871:30:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kbuf[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  871 |     void encode_buf([01;35m[Kuint8_t* buf[m[K) const {
+      |                     [01;35m[K~~~~~~~~~^~~[m[K
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/../odrive_base/include/can_simple_messages.hpp:[m[K In member function ‘[01m[Kvoid Enter_DFU_Mode_msg_t::[01;32m[Kdecode_buf[m[K(const uint8_t*)[m[K’:
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/../odrive_base/include/can_simple_messages.hpp:874:36:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kbuf[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+  874 |     void decode_buf([01;35m[Kconst uint8_t* buf[m[K) {
+      |                     [01;35m[K~~~~~~~~~~~~~~~^~~[m[K
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/src/odrive_hardware_interface.cpp:[m[K In member function ‘[01m[Kvirtual hardware_interface::CallbackReturn odrive_ros2_control::ODriveHardwareInterface::[01;32m[Kon_init[m[K(const hardware_interface::HardwareInfo&)[m[K’:
+[01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/src/odrive_hardware_interface.cpp:113:53:[m[K [01;35m[Kwarning: [m[K‘[01m[Kvirtual rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn hardware_interface::HardwareComponentInterface::[01;32m[Kon_init[m[K(const hardware_interface::HardwareInfo&)[m[K’ is deprecated: Use on_init(const HardwareComponentInterfaceParams & params) instead. [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wdeprecated-declarations-Wdeprecated-declarations]8;;[m[K]
+  113 |     if ([01;35m[Khardware_interface::SystemInterface::on_init(info)[m[K != CallbackReturn::SUCCESS) {
+      |         [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~[m[K
+In file included from [01m[K/opt/ros/jazzy/include/hardware_interface/hardware_interface/system_interface.hpp:18[m[K,
+                 from [01m[K/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control/src/odrive_hardware_interface.cpp:4[m[K:
+[01m[K/opt/ros/jazzy/include/hardware_interface/hardware_interface/hardware_component_interface.hpp:140:26:[m[K [01;36m[Knote: [m[Kdeclared here
+  140 |   virtual CallbackReturn [01;36m[Kon_init[m[K(const HardwareInfo & hardware_info);
+      |                          [01;36m[K^~~~~~~[m[K
+[100%] [32m[1mLinking CXX shared library libodrive_ros2_control_plugin.so[0m
+[100%] Built target odrive_ros2_control_plugin
+-- Install configuration: ""
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/odrive_hardware_interface.xml
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/lib/libodrive_ros2_control_plugin.so
+-- Set non-toolchain portion of runtime path of "/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/lib/libodrive_ros2_control_plugin.so" to ""
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/ament_index/resource_index/package_run_dependencies/odrive_ros2_control
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/ament_index/resource_index/parent_prefix_path/odrive_ros2_control
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/environment/ament_prefix_path.sh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/environment/ament_prefix_path.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/environment/path.sh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/environment/path.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/local_setup.bash
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/local_setup.sh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/local_setup.zsh
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/local_setup.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.dsv
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/ament_index/resource_index/packages/odrive_ros2_control
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/ament_index/resource_index/hardware_interface__pluginlib__plugin/odrive_ros2_control
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/cmake/odrive_ros2_controlConfig.cmake
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/cmake/odrive_ros2_controlConfig-version.cmake
+-- Installing: /home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.xml

@@ -1,0 +1,397 @@
+[0.096s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--cmake-args', '-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg']
+[0.096s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=4, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=['-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg'], cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x7346f2b7a660>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7346f2b7a480>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7346f2b7a480>>, mixin_verb=('build',))
+[0.128s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.129s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/shusain/projects/hil_odrive_chrono_ros2_control'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.129s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.151s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src/chrono_flap_sim) by extensions ['ignore', 'ignore_ament_install']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src/chrono_flap_sim) by extension 'ignore'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src/chrono_flap_sim) by extension 'ignore_ament_install'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src/chrono_flap_sim) by extensions ['colcon_pkg']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src/chrono_flap_sim) by extension 'colcon_pkg'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src/chrono_flap_sim) by extensions ['colcon_meta']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src/chrono_flap_sim) by extension 'colcon_meta'
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src/chrono_flap_sim) by extensions ['ros']
+[0.152s] Level 1:colcon.colcon_core.package_identification:_identify(src/chrono_flap_sim) by extension 'ros'
+[0.154s] DEBUG:colcon.colcon_core.package_identification:Package 'src/chrono_flap_sim' with type 'ros.ament_cmake' and name 'chrono_flap_sim'
+[0.154s] Level 1:colcon.colcon_core.package_identification:_identify(src/hil_odrive_ros2_control) by extensions ['ignore', 'ignore_ament_install']
+[0.154s] Level 1:colcon.colcon_core.package_identification:_identify(src/hil_odrive_ros2_control) by extension 'ignore'
+[0.154s] Level 1:colcon.colcon_core.package_identification:_identify(src/hil_odrive_ros2_control) by extension 'ignore_ament_install'
+[0.154s] Level 1:colcon.colcon_core.package_identification:_identify(src/hil_odrive_ros2_control) by extensions ['colcon_pkg']
+[0.154s] Level 1:colcon.colcon_core.package_identification:_identify(src/hil_odrive_ros2_control) by extension 'colcon_pkg'
+[0.154s] Level 1:colcon.colcon_core.package_identification:_identify(src/hil_odrive_ros2_control) by extensions ['colcon_meta']
+[0.154s] Level 1:colcon.colcon_core.package_identification:_identify(src/hil_odrive_ros2_control) by extension 'colcon_meta'
+[0.154s] Level 1:colcon.colcon_core.package_identification:_identify(src/hil_odrive_ros2_control) by extensions ['ros']
+[0.154s] Level 1:colcon.colcon_core.package_identification:_identify(src/hil_odrive_ros2_control) by extension 'ros'
+[0.155s] DEBUG:colcon.colcon_core.package_identification:Package 'src/hil_odrive_ros2_control' with type 'ros.ament_cmake' and name 'hil_odrive_ros2_control'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extensions ['ignore', 'ignore_ament_install']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extension 'ignore'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extension 'ignore_ament_install'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extensions ['colcon_pkg']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extension 'colcon_pkg'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extensions ['colcon_meta']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extension 'colcon_meta'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extensions ['ros']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extension 'ros'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extensions ['cmake', 'python']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extension 'cmake'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extension 'python'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extensions ['python_setup_py']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base) by extension 'python_setup_py'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extensions ['ignore', 'ignore_ament_install']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extension 'ignore'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extension 'ignore_ament_install'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extensions ['colcon_pkg']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extension 'colcon_pkg'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extensions ['colcon_meta']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extension 'colcon_meta'
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extensions ['ros']
+[0.155s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extension 'ros'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extensions ['cmake', 'python']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extension 'cmake'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extension 'python'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extensions ['python_setup_py']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/include) by extension 'python_setup_py'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extensions ['ignore', 'ignore_ament_install']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extension 'ignore'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extension 'ignore_ament_install'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extensions ['colcon_pkg']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extension 'colcon_pkg'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extensions ['colcon_meta']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extension 'colcon_meta'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extensions ['ros']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extension 'ros'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extensions ['cmake', 'python']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extension 'cmake'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extension 'python'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extensions ['python_setup_py']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_base/src) by extension 'python_setup_py'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_ros2_control) by extensions ['ignore', 'ignore_ament_install']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_ros2_control) by extension 'ignore'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_ros2_control) by extension 'ignore_ament_install'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_ros2_control) by extensions ['colcon_pkg']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_ros2_control) by extension 'colcon_pkg'
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_ros2_control) by extensions ['colcon_meta']
+[0.156s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_ros2_control) by extension 'colcon_meta'
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_ros2_control) by extensions ['ros']
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_ros2_control) by extension 'ros'
+[0.157s] DEBUG:colcon.colcon_core.package_identification:Package 'src/odrive_ros2_control' with type 'ros.ament_cmake' and name 'odrive_ros2_control'
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_velocity_pid) by extensions ['ignore', 'ignore_ament_install']
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_velocity_pid) by extension 'ignore'
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_velocity_pid) by extension 'ignore_ament_install'
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_velocity_pid) by extensions ['colcon_pkg']
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_velocity_pid) by extension 'colcon_pkg'
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_velocity_pid) by extensions ['colcon_meta']
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_velocity_pid) by extension 'colcon_meta'
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_velocity_pid) by extensions ['ros']
+[0.157s] Level 1:colcon.colcon_core.package_identification:_identify(src/odrive_velocity_pid) by extension 'ros'
+[0.158s] DEBUG:colcon.colcon_core.package_identification:Package 'src/odrive_velocity_pid' with type 'ros.ament_cmake' and name 'odrive_velocity_pid'
+[0.158s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.158s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.158s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.158s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.158s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.172s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.172s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.173s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.173s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.173s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.173s] WARNING:colcon.colcon_ros.prefix_path.ament:The path '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim' in the environment variable AMENT_PREFIX_PATH doesn't exist
+[0.173s] WARNING:colcon.colcon_ros.prefix_path.catkin:The path '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid' in the environment variable CMAKE_PREFIX_PATH doesn't exist
+[0.173s] WARNING:colcon.colcon_ros.prefix_path.catkin:The path '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control' in the environment variable CMAKE_PREFIX_PATH doesn't exist
+[0.173s] WARNING:colcon.colcon_ros.prefix_path.catkin:The path '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control' in the environment variable CMAKE_PREFIX_PATH doesn't exist
+[0.173s] WARNING:colcon.colcon_ros.prefix_path.catkin:The path '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim' in the environment variable CMAKE_PREFIX_PATH doesn't exist
+[0.174s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 0 installed packages in /home/shusain/projects/hil_odrive_chrono_ros2_control/install
+[0.175s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 346 installed packages in /opt/ros/jazzy
+[0.177s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_ros2_control' build argument 'cmake_args' from command line to '['-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg']'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_ros2_control' build argument 'cmake_target' from command line to 'None'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_ros2_control' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_ros2_control' build argument 'cmake_clean_cache' from command line to 'False'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_ros2_control' build argument 'cmake_clean_first' from command line to 'False'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_ros2_control' build argument 'cmake_force_configure' from command line to 'False'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_ros2_control' build argument 'ament_cmake_args' from command line to 'None'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_ros2_control' build argument 'catkin_cmake_args' from command line to 'None'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_ros2_control' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.212s] DEBUG:colcon.colcon_core.verb:Building package 'odrive_ros2_control' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': ['-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg'], 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control', 'merge_install': False, 'path': '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control', 'symlink_install': False, 'test_result_base': None}
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_velocity_pid' build argument 'cmake_args' from command line to '['-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg']'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_velocity_pid' build argument 'cmake_target' from command line to 'None'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_velocity_pid' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_velocity_pid' build argument 'cmake_clean_cache' from command line to 'False'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_velocity_pid' build argument 'cmake_clean_first' from command line to 'False'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_velocity_pid' build argument 'cmake_force_configure' from command line to 'False'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_velocity_pid' build argument 'ament_cmake_args' from command line to 'None'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_velocity_pid' build argument 'catkin_cmake_args' from command line to 'None'
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'odrive_velocity_pid' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.212s] DEBUG:colcon.colcon_core.verb:Building package 'odrive_velocity_pid' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': ['-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg'], 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid', 'merge_install': False, 'path': '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_velocity_pid', 'symlink_install': False, 'test_result_base': None}
+[0.212s] Level 5:colcon.colcon_core.verb:set package 'hil_odrive_ros2_control' build argument 'cmake_args' from command line to '['-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg']'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'hil_odrive_ros2_control' build argument 'cmake_target' from command line to 'None'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'hil_odrive_ros2_control' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'hil_odrive_ros2_control' build argument 'cmake_clean_cache' from command line to 'False'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'hil_odrive_ros2_control' build argument 'cmake_clean_first' from command line to 'False'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'hil_odrive_ros2_control' build argument 'cmake_force_configure' from command line to 'False'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'hil_odrive_ros2_control' build argument 'ament_cmake_args' from command line to 'None'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'hil_odrive_ros2_control' build argument 'catkin_cmake_args' from command line to 'None'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'hil_odrive_ros2_control' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.213s] DEBUG:colcon.colcon_core.verb:Building package 'hil_odrive_ros2_control' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': ['-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg'], 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control', 'merge_install': False, 'path': '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/hil_odrive_ros2_control', 'symlink_install': False, 'test_result_base': None}
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'chrono_flap_sim' build argument 'cmake_args' from command line to '['-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg']'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'chrono_flap_sim' build argument 'cmake_target' from command line to 'None'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'chrono_flap_sim' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'chrono_flap_sim' build argument 'cmake_clean_cache' from command line to 'False'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'chrono_flap_sim' build argument 'cmake_clean_first' from command line to 'False'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'chrono_flap_sim' build argument 'cmake_force_configure' from command line to 'False'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'chrono_flap_sim' build argument 'ament_cmake_args' from command line to 'None'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'chrono_flap_sim' build argument 'catkin_cmake_args' from command line to 'None'
+[0.213s] Level 5:colcon.colcon_core.verb:set package 'chrono_flap_sim' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.213s] DEBUG:colcon.colcon_core.verb:Building package 'chrono_flap_sim' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': ['-DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg'], 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim', 'merge_install': False, 'path': '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/chrono_flap_sim', 'symlink_install': False, 'test_result_base': None}
+[0.213s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.214s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.214s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control' with build type 'ament_cmake'
+[0.214s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control'
+[0.216s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.216s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.216s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.219s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_velocity_pid' with build type 'ament_cmake'
+[0.219s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_velocity_pid'
+[0.219s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.219s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.225s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control -DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control
+[0.227s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_velocity_pid -DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid
+[1.364s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_velocity_pid -DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid
+[1.365s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid -- -j4 -l4
+[1.728s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/odrive_ros2_control -DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control
+[1.729s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control -- -j4 -l4
+[7.258s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control -- -j4 -l4
+[7.262s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control
+[7.269s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(odrive_ros2_control)
+[7.269s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_ros2_control
+[7.271s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control' for CMake module files
+[7.271s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control' for CMake config files
+[7.271s] Level 1:colcon.colcon_core.shell:create_environment_hook('odrive_ros2_control', 'cmake_prefix_path')
+[7.271s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/cmake_prefix_path.ps1'
+[7.272s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/cmake_prefix_path.dsv'
+[7.272s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/cmake_prefix_path.sh'
+[7.273s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/lib'
+[7.273s] Level 1:colcon.colcon_core.shell:create_environment_hook('odrive_ros2_control', 'ld_library_path_lib')
+[7.273s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/ld_library_path_lib.ps1'
+[7.273s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/ld_library_path_lib.dsv'
+[7.273s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/ld_library_path_lib.sh'
+[7.274s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/bin'
+[7.274s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/lib/pkgconfig/odrive_ros2_control.pc'
+[7.274s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/lib/python3.12/site-packages'
+[7.274s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/bin'
+[7.274s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.ps1'
+[7.275s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.dsv'
+[7.275s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.sh'
+[7.276s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.bash'
+[7.276s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.zsh'
+[7.277s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/colcon-core/packages/odrive_ros2_control)
+[7.277s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(odrive_ros2_control)
+[7.277s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control' for CMake module files
+[7.277s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control' for CMake config files
+[7.278s] Level 1:colcon.colcon_core.shell:create_environment_hook('odrive_ros2_control', 'cmake_prefix_path')
+[7.278s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/cmake_prefix_path.ps1'
+[7.278s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/cmake_prefix_path.dsv'
+[7.278s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/cmake_prefix_path.sh'
+[7.278s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/lib'
+[7.279s] Level 1:colcon.colcon_core.shell:create_environment_hook('odrive_ros2_control', 'ld_library_path_lib')
+[7.279s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/ld_library_path_lib.ps1'
+[7.279s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/ld_library_path_lib.dsv'
+[7.279s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/hook/ld_library_path_lib.sh'
+[7.279s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/bin'
+[7.279s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/lib/pkgconfig/odrive_ros2_control.pc'
+[7.280s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/lib/python3.12/site-packages'
+[7.280s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/bin'
+[7.280s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.ps1'
+[7.280s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.dsv'
+[7.281s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.sh'
+[7.281s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.bash'
+[7.282s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/odrive_ros2_control/package.zsh'
+[7.282s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control/share/colcon-core/packages/odrive_ros2_control)
+[7.282s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/hil_odrive_ros2_control' with build type 'ament_cmake'
+[7.282s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/hil_odrive_ros2_control'
+[7.282s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[7.282s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[7.295s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/hil_odrive_ros2_control -DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control
+[7.912s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control' returned '0': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/hil_odrive_ros2_control -DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control
+[7.912s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control -- -j4 -l4
+[7.926s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control' returned '0': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control -- -j4 -l4
+[7.927s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control
+[7.932s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(hil_odrive_ros2_control)
+[7.932s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control' for CMake module files
+[7.933s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control' returned '0': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/hil_odrive_ros2_control
+[7.933s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control' for CMake config files
+[7.933s] Level 1:colcon.colcon_core.shell:create_environment_hook('hil_odrive_ros2_control', 'cmake_prefix_path')
+[7.933s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/hook/cmake_prefix_path.ps1'
+[7.934s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/hook/cmake_prefix_path.dsv'
+[7.934s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/hook/cmake_prefix_path.sh'
+[7.934s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/bin'
+[7.934s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/lib/pkgconfig/hil_odrive_ros2_control.pc'
+[7.935s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/lib/python3.12/site-packages'
+[7.935s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/bin'
+[7.935s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.ps1'
+[7.935s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.dsv'
+[7.936s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.sh'
+[7.936s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.bash'
+[7.936s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.zsh'
+[7.936s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/colcon-core/packages/hil_odrive_ros2_control)
+[7.936s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(hil_odrive_ros2_control)
+[7.937s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control' for CMake module files
+[7.937s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control' for CMake config files
+[7.937s] Level 1:colcon.colcon_core.shell:create_environment_hook('hil_odrive_ros2_control', 'cmake_prefix_path')
+[7.937s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/hook/cmake_prefix_path.ps1'
+[7.937s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/hook/cmake_prefix_path.dsv'
+[7.938s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/hook/cmake_prefix_path.sh'
+[7.938s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/bin'
+[7.938s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/lib/pkgconfig/hil_odrive_ros2_control.pc'
+[7.938s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/lib/python3.12/site-packages'
+[7.938s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/bin'
+[7.938s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.ps1'
+[7.939s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.dsv'
+[7.939s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.sh'
+[7.939s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.bash'
+[7.940s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/hil_odrive_ros2_control/package.zsh'
+[7.940s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control/share/colcon-core/packages/hil_odrive_ros2_control)
+[10.880s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid -- -j4 -l4
+[10.881s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid
+[10.888s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(odrive_velocity_pid)
+[10.888s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid' for CMake module files
+[10.889s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/odrive_velocity_pid
+[10.889s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid' for CMake config files
+[10.889s] Level 1:colcon.colcon_core.shell:create_environment_hook('odrive_velocity_pid', 'cmake_prefix_path')
+[10.889s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/hook/cmake_prefix_path.ps1'
+[10.890s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/hook/cmake_prefix_path.dsv'
+[10.890s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/hook/cmake_prefix_path.sh'
+[10.890s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/lib'
+[10.891s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/bin'
+[10.891s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/lib/pkgconfig/odrive_velocity_pid.pc'
+[10.891s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/lib/python3.12/site-packages'
+[10.891s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/bin'
+[10.891s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.ps1'
+[10.892s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.dsv'
+[10.892s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.sh'
+[10.893s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.bash'
+[10.893s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.zsh'
+[10.893s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/colcon-core/packages/odrive_velocity_pid)
+[10.894s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(odrive_velocity_pid)
+[10.894s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid' for CMake module files
+[10.894s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid' for CMake config files
+[10.894s] Level 1:colcon.colcon_core.shell:create_environment_hook('odrive_velocity_pid', 'cmake_prefix_path')
+[10.895s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/hook/cmake_prefix_path.ps1'
+[10.895s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/hook/cmake_prefix_path.dsv'
+[10.895s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/hook/cmake_prefix_path.sh'
+[10.895s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/lib'
+[10.895s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/bin'
+[10.895s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/lib/pkgconfig/odrive_velocity_pid.pc'
+[10.896s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/lib/python3.12/site-packages'
+[10.896s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/bin'
+[10.896s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.ps1'
+[10.896s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.dsv'
+[10.897s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.sh'
+[10.897s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.bash'
+[10.897s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/odrive_velocity_pid/package.zsh'
+[10.897s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid/share/colcon-core/packages/odrive_velocity_pid)
+[10.897s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/chrono_flap_sim' with build type 'ament_cmake'
+[10.898s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/shusain/projects/hil_odrive_chrono_ros2_control/src/chrono_flap_sim'
+[10.898s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[10.898s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[10.907s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/chrono_flap_sim -DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim
+[13.078s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim' returned '0': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake /home/shusain/projects/hil_odrive_chrono_ros2_control/src/chrono_flap_sim -DCMAKE_PREFIX_PATH=/home/shusain/Packages/vsg -DCMAKE_INSTALL_PREFIX=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim
+[13.079s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim -- -j4 -l4
+[32.435s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim' returned '0': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --build /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim -- -j4 -l4
+[32.436s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim
+[32.446s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(chrono_flap_sim)
+[32.446s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim' for CMake module files
+[32.446s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim' returned '0': CMAKE_PREFIX_PATH=/home/shusain/projects/hil_odrive_chrono_ros2_control/install/hil_odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_velocity_pid:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/odrive_ros2_control:/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/local/bin/cmake --install /home/shusain/projects/hil_odrive_chrono_ros2_control/build/chrono_flap_sim
+[32.447s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim' for CMake config files
+[32.447s] Level 1:colcon.colcon_core.shell:create_environment_hook('chrono_flap_sim', 'cmake_prefix_path')
+[32.447s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/hook/cmake_prefix_path.ps1'
+[32.447s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/hook/cmake_prefix_path.dsv'
+[32.447s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/hook/cmake_prefix_path.sh'
+[32.448s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/lib'
+[32.448s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/bin'
+[32.448s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/lib/pkgconfig/chrono_flap_sim.pc'
+[32.448s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/lib/python3.12/site-packages'
+[32.448s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/bin'
+[32.448s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.ps1'
+[32.449s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.dsv'
+[32.449s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.sh'
+[32.449s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.bash'
+[32.449s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.zsh'
+[32.449s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/colcon-core/packages/chrono_flap_sim)
+[32.450s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(chrono_flap_sim)
+[32.450s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim' for CMake module files
+[32.450s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim' for CMake config files
+[32.450s] Level 1:colcon.colcon_core.shell:create_environment_hook('chrono_flap_sim', 'cmake_prefix_path')
+[32.450s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/hook/cmake_prefix_path.ps1'
+[32.451s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/hook/cmake_prefix_path.dsv'
+[32.451s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/hook/cmake_prefix_path.sh'
+[32.451s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/lib'
+[32.451s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/bin'
+[32.451s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/lib/pkgconfig/chrono_flap_sim.pc'
+[32.451s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/lib/python3.12/site-packages'
+[32.452s] Level 1:colcon.colcon_core.environment:checking '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/bin'
+[32.452s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.ps1'
+[32.452s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.dsv'
+[32.452s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.sh'
+[32.453s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.bash'
+[32.453s] INFO:colcon.colcon_core.shell:Creating package script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/chrono_flap_sim/package.zsh'
+[32.453s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/shusain/projects/hil_odrive_chrono_ros2_control/install/chrono_flap_sim/share/colcon-core/packages/chrono_flap_sim)
+[32.453s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[32.454s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[32.454s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[32.454s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[32.458s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[32.458s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[32.458s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[32.470s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[32.471s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/local_setup.ps1'
+[32.472s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/_local_setup_util_ps1.py'
+[32.473s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/setup.ps1'
+[32.475s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/local_setup.sh'
+[32.475s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/_local_setup_util_sh.py'
+[32.476s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/setup.sh'
+[32.477s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/local_setup.bash'
+[32.477s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/setup.bash'
+[32.478s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/local_setup.zsh'
+[32.478s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/shusain/projects/hil_odrive_chrono_ros2_control/install/setup.zsh'

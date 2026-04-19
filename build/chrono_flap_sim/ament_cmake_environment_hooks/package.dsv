@@ -1,0 +1,4 @@
+source;share/chrono_flap_sim/local_setup.bash
+source;share/chrono_flap_sim/local_setup.dsv
+source;share/chrono_flap_sim/local_setup.sh
+source;share/chrono_flap_sim/local_setup.zsh

@@ -77,7 +77,7 @@ public:
     // Joint dynamics
     this->declare_parameter<double>("joint_damping", 0.0);
     this->declare_parameter<double>("joint_stiffness", 0.712441);
-    this->declare_parameter<double>("bearing_friction", 0.005);
+    this->declare_parameter<double>("bearing_friction", 0.4);
     // ROS interface
     this->declare_parameter<std::string>("effort_topic", "/motor_effort_controller/commands");
     this->declare_parameter<bool>("enable_visualization", false);

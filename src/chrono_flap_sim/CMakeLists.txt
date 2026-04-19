@@ -32,6 +32,9 @@ set(CHRONO_VIS_BACKEND "auto" CACHE STRING "Visualization backend: auto, vsg, ir
 string(TOLOWER "${CHRONO_VIS_BACKEND}" _vis_backend)
 message(STATUS "chrono_flap_sim: CHRONO_VIS_BACKEND = ${_vis_backend}")
 
+set(_use_vsg FALSE)
+set(_use_irrlicht FALSE)
+
 if(_vis_backend STREQUAL "none")
   message(STATUS "chrono_flap_sim: Visualization disabled (CHRONO_VIS_BACKEND=none) - running headless")
 elseif(_vis_backend STREQUAL "vsg" OR (_vis_backend STREQUAL "auto" AND Chrono_VSG_AVAILABLE))
@@ -40,6 +43,7 @@ elseif(_vis_backend STREQUAL "vsg" OR (_vis_backend STREQUAL "auto" AND Chrono_V
     if(CHRONO_VSG_LIB)
       message(STATUS "chrono_flap_sim: Found Chrono_vsg at ${CHRONO_VSG_LIB}")
       list(APPEND LIBS ${CHRONO_VSG_LIB})
+      set(_use_vsg TRUE)
 
       # Find VSG include dir from CMAKE_PREFIX_PATH.
       # Do NOT link vsg::vsg imported target - it may re-enable format definitions.
@@ -69,6 +73,7 @@ elseif(_vis_backend STREQUAL "vsg" OR (_vis_backend STREQUAL "auto" AND Chrono_V
         if(CHRONO_IRRLICHT_LIB)
           message(STATUS "chrono_flap_sim: Falling back to Chrono_irrlicht at ${CHRONO_IRRLICHT_LIB}")
           list(APPEND LIBS ${CHRONO_IRRLICHT_LIB})
+          set(_use_irrlicht TRUE)
         endif()
       endif()
     endif()
@@ -81,6 +86,7 @@ elseif(_vis_backend STREQUAL "irrlicht" OR (_vis_backend STREQUAL "auto" AND Chr
     if(CHRONO_IRRLICHT_LIB)
       message(STATUS "chrono_flap_sim: Found Chrono_irrlicht at ${CHRONO_IRRLICHT_LIB}")
       list(APPEND LIBS ${CHRONO_IRRLICHT_LIB})
+      set(_use_irrlicht TRUE)
     endif()
   else()
     message(WARNING "chrono_flap_sim: CHRONO_VIS_BACKEND=irrlicht requested but Chrono_IRRLICHT_AVAILABLE is false - running headless")
@@ -93,6 +99,17 @@ else()
 endif()
 
 add_executable(chrono_flap_node src/chrono_flap_node.cpp)
+
+# Use our own compile-time flags so visualization guards are decoupled from
+# whatever CHRONO_VSG / CHRONO_IRRLICHT Chrono's cmake config injects.
+if(_use_vsg)
+  target_compile_definitions(chrono_flap_node PRIVATE CHRONO_FLAP_USE_VSG)
+  message(STATUS "chrono_flap_sim: Compiling with CHRONO_FLAP_USE_VSG")
+endif()
+if(_use_irrlicht)
+  target_compile_definitions(chrono_flap_node PRIVATE CHRONO_FLAP_USE_IRRLICHT)
+  message(STATUS "chrono_flap_sim: Compiling with CHRONO_FLAP_USE_IRRLICHT")
+endif()
 
 target_include_directories(chrono_flap_node PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/include

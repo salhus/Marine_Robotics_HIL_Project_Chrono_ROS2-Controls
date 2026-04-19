@@ -1,5 +1,5 @@
 // chrono_flap_node.cpp
-//
+
 // ChronoFlapNode - ROS 2 node running a Project Chrono simulation of a motor-driven flap.
 // Uses a manual simulation loop so VSG rendering happens on the main thread.
 //
@@ -9,6 +9,10 @@
 // The publish rate (rate_hz, default 100 Hz) matches the hardware control loop.
 // The solver runs at solver_rate_hz (default 1000 Hz) internally for numerical stability,
 // taking multiple sub-steps per publish tick.
+//
+// The torque applied each sub-step is:
+//   τ_total = τ_external - B·ω - K·θ
+// where B = joint_damping, K = joint_stiffness, θ = motor angle, ω = motor angular velocity.
 #include <chrono>
 #include <cmath>
 #include <functional>
@@ -53,15 +57,17 @@ public:
     this->declare_parameter<double>("flap_length_m", 0.3);
     this->declare_parameter<double>("flap_mass_kg", 0.05);
     this->declare_parameter<double>("joint_damping", 0.0001);
+    this->declare_parameter<double>("joint_stiffness", 0.0);
     this->declare_parameter<std::string>("effort_topic", "/motor_effort_controller/commands");
     this->declare_parameter<bool>("enable_visualization", false);
-    rate_hz_        = this->get_parameter("rate_hz").as_double();
-    solver_rate_hz_ = this->get_parameter("solver_rate_hz").as_double();
-    flap_length_    = this->get_parameter("flap_length_m").as_double();
-    flap_mass_      = this->get_parameter("flap_mass_kg").as_double();
-    joint_damping_  = this->get_parameter("joint_damping").as_double();
-    effort_topic_   = this->get_parameter("effort_topic").as_string();
-    enable_vis_     = this->get_parameter("enable_visualization").as_bool();
+    rate_hz_          = this->get_parameter("rate_hz").as_double();
+    solver_rate_hz_   = this->get_parameter("solver_rate_hz").as_double();
+    flap_length_      = this->get_parameter("flap_length_m").as_double();
+    flap_mass_        = this->get_parameter("flap_mass_kg").as_double();
+    joint_damping_    = this->get_parameter("joint_damping").as_double();
+    joint_stiffness_  = this->get_parameter("joint_stiffness").as_double();
+    effort_topic_     = this->get_parameter("effort_topic").as_string();
+    enable_vis_       = this->get_parameter("enable_visualization").as_bool();
     // Publish interval (wall-clock pacing)
     publish_dt_ = (rate_hz_ > 0.0) ? (1.0 / rate_hz_) : 0.01;
     // Solver timestep (internal sub-stepping)
@@ -91,8 +97,9 @@ public:
     RCLCPP_INFO(
       this->get_logger(),
       "ChronoFlapNode started: publish=%.0f Hz, solver=%.0f Hz (%d substeps), "
-      "flap=%.3f m / %.4f kg, damping=%.4f",
-      rate_hz_, solver_rate_hz_, substeps_, flap_length_, flap_mass_, joint_damping_);
+      "flap=%.3f m / %.4f kg, damping=%.4f, stiffness=%.4f",
+      rate_hz_, solver_rate_hz_, substeps_, flap_length_, flap_mass_,
+      joint_damping_, joint_stiffness_);
   }
   void run()
   {
@@ -121,9 +128,14 @@ public:
       // Record velocity before sub-stepping for acceleration estimate
       const double vel_before = sim_velocity_;
       // Run solver sub-steps
+      // τ_total = τ_external - B·ω - K·θ
       for (int i = 0; i < substeps_; ++i) {
-        const double damped_torque = latest_torque_ - joint_damping_ * motor_link_->GetMotorAngleDt();
-        torque_fn_->SetSetpoint(damped_torque, sys_->GetChTime());
+        const double angle = motor_link_->GetMotorAngle();
+        const double omega = motor_link_->GetMotorAngleDt();
+        const double total_torque = latest_torque_
+                                  - joint_damping_   * omega
+                                  - joint_stiffness_ * angle;
+        torque_fn_->SetSetpoint(total_torque, sys_->GetChTime());
         sys_->DoStepDynamics(solver_dt_);
       }
       sim_position_ = motor_link_->GetMotorAngle();
@@ -237,10 +249,10 @@ private:
           return result;
         }
       }
-      if (param.get_name() == "joint_damping") {
+      if (param.get_name() == "joint_damping" || param.get_name() == "joint_stiffness") {
         if (param.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE || param.as_double() < 0.0) {
           result.successful = false;
-          result.reason = "joint_damping must be non-negative.";
+          result.reason = param.get_name() + " must be non-negative.";
           return result;
         }
       }
@@ -254,6 +266,7 @@ private:
       if (param.get_name() == "flap_length_m") { flap_length_ = param.as_double(); body_needs_update = true; }
       else if (param.get_name() == "flap_mass_kg") { flap_mass_ = param.as_double(); body_needs_update = true; }
       else if (param.get_name() == "joint_damping") { joint_damping_ = param.as_double(); }
+      else if (param.get_name() == "joint_stiffness") { joint_stiffness_ = param.as_double(); }
     }
     if (body_needs_update) {
       update_flap_inertia();
@@ -281,6 +294,7 @@ private:
   double      flap_length_{0.3};
   double      flap_mass_{0.05};
   double      joint_damping_{0.0001};
+  double      joint_stiffness_{0.0};
   std::string effort_topic_{"/motor_effort_controller/commands"};
   bool        enable_vis_{false};
   bool        vis_active_{false};

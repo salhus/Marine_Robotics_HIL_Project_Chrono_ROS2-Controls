@@ -55,6 +55,15 @@ def generate_launch_description():
         output="both",
     )
 
+    sim_robot_state_pub_node = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="sim_robot_state_publisher",
+        parameters=[robot_description, {"frame_prefix": "sim/"}],
+        remappings=[("joint_states", "/sim_joint_states")],
+        output="both",
+    )
+
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -96,6 +105,7 @@ def generate_launch_description():
         + [
             control_node,
             robot_state_pub_node,
+            sim_robot_state_pub_node,
             joint_state_broadcaster_spawner,
             effort_controller_spawner,
             pto_controller_spawner,

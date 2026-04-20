@@ -44,6 +44,9 @@
   </joint>
 
   <!-- PTO motor (axis1) — same shaft as motor_joint, passive linear damper -->
+  <!-- Commented out: pto_link/pto_joint are not published by joint_state_broadcaster,
+       causing robot_state_publisher to fail computing TF → RViz RobotModel error. -->
+  <!--
   <link name="pto_link">
     <visual>
       <geometry>
@@ -61,6 +64,7 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
   </joint>
+  -->
 
   <!-- ros2_control hardware — both axes on the same ODrive board / CAN bus -->
   <ros2_control name="ODriveSystem" type="system">

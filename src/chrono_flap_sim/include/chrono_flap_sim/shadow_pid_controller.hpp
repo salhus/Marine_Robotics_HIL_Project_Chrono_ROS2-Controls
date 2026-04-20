@@ -21,13 +21,16 @@
 //   accel_ref = amplitude * omega * cos(omega * t)
 //   pos_ref   = position_setpoint + (amplitude / omega) * (1 - cos(omega * t))
 //
-// Usage:
+// Usage (internal trajectory):
 //   ShadowPidController pid;
 //   pid.control_mode      = "cascade";
 //   pid.kp                = 0.35;
 //   // ... set other gains ...
 //   pid.reset();
 //   double torque = pid.compute(sim_position, sim_velocity, t, dt);
+//
+// Usage (external references, e.g. synced from velocity_pid_node topics):
+//   double torque = pid.compute(sim_position, sim_velocity, pos_ref, vel_ref, dt);
 
 #pragma once
 
@@ -129,6 +132,48 @@ public:
     } else {  // velocity_only
       v_cmd_ = vel_ref;
       torque = run_inner_loop(vel_ref, accel_ref, dt);
+    }
+
+    return torque;
+  }
+
+  // ── compute (external references) — use provided pos_ref / vel_ref instead of internal trajectory ──
+  //
+  // Parameters:
+  //   sim_position  – current simulated joint angle (rad)
+  //   sim_velocity  – current simulated joint angular velocity (rad/s)
+  //   pos_ref       – position reference from external source (rad)
+  //   vel_ref       – velocity reference from external source (rad/s); used as feedforward
+  //   dt            – time since last call (s); must be > 0
+  //
+  // Acceleration feedforward is set to 0 (not available from external source).
+  // Returns the torque command (N·m), clamped to ±torque_limit_nm.
+  double compute(double sim_position, double sim_velocity,
+                 double pos_ref, double vel_ref, double dt)
+  {
+    apply_gains();
+
+    // ── Velocity filter ────────────────────────────────────────────────────────────────────────
+    if (!filter_initialized_) {
+      filtered_vel_       = sim_velocity;
+      filter_initialized_ = true;
+    } else {
+      filtered_vel_ = filter_alpha * filtered_vel_ + (1.0 - filter_alpha) * sim_velocity;
+    }
+
+    // ── Mode dispatch with external references ────────────────────────────────────────────────
+    double torque = 0.0;
+    if (control_mode == "cascade") {
+      run_outer_loop(pos_ref, vel_ref, sim_position, dt);
+      torque = run_inner_loop(v_cmd_, 0.0, dt);
+    } else if (control_mode == "position_only") {
+      torque = pos_pid_.compute(pos_ref, sim_position, dt);
+      torque = std::clamp(torque, -torque_limit_nm, torque_limit_nm);
+      pos_pid_.saturated = (std::abs(torque) >= torque_limit_nm);
+      v_cmd_ = 0.0;
+    } else {  // velocity_only
+      v_cmd_ = vel_ref;
+      torque = run_inner_loop(vel_ref, 0.0, dt);
     }
 
     return torque;

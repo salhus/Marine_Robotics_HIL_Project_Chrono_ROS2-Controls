@@ -91,7 +91,13 @@ public:
     // ── Shadow PID control mode ──────────────────────────────────────────────────────────────
     this->declare_parameter<std::string>("shadow_control_mode", "position_only");
 
-    // ── Shadow PID trajectory ────────────────────────────────────────────────────────────────
+    // ── Shadow PID trajectory sync ───────────────────────────────────────────────────────────
+    // When true (default in parallel mode), shadow PID subscribes to velocity_pid_node's
+    // published position_command / velocity_command topics instead of generating its own
+    // trajectory. Forced false in SIL mode to avoid circular dependency.
+    this->declare_parameter<bool>("shadow_sync_trajectory", true);
+
+    // ── Shadow PID trajectory (used only when shadow_sync_trajectory=false) ─────────────────
     this->declare_parameter<double>("shadow_position_setpoint", 0.0);
     this->declare_parameter<double>("shadow_amplitude_rad_s",   0.0);
     this->declare_parameter<double>("shadow_omega_rad_s",       0.0);
@@ -134,6 +140,15 @@ public:
     coulomb_friction_  = this->get_parameter("coulomb_friction").as_double();
     use_shadow_pid_    = this->get_parameter("use_shadow_pid").as_bool();
 
+    // shadow_sync_trajectory: forced false in SIL mode to avoid circular dependency
+    shadow_sync_trajectory_ = this->get_parameter("shadow_sync_trajectory").as_bool();
+    if (sil_mode_ && shadow_sync_trajectory_) {
+      RCLCPP_WARN(this->get_logger(),
+        "shadow_sync_trajectory=true ignored in SIL mode (would create circular dependency); "
+        "forcing shadow_sync_trajectory=false.");
+      shadow_sync_trajectory_ = false;
+    }
+
     read_shadow_params();
 
     // Timing derived quantities
@@ -163,6 +178,28 @@ public:
         joint_state_topic_, 10);
       RCLCPP_INFO(this->get_logger(), "SIL mode: publishing %s (joint='%s')",
         joint_state_topic_.c_str(), joint_name_.c_str());
+    } else {
+      // Parallel mode: publish sim joint states on a separate topic for the sim RSP / RViz overlay
+      sim_joint_state_pub_ = this->create_publisher<sensor_msgs::msg::JointState>(
+        "/sim_joint_states", 10);
+
+      // Subscribe to velocity_pid_node trajectory topics when shadow_sync_trajectory is active
+      if (shadow_sync_trajectory_) {
+        pos_cmd_sub_ = this->create_subscription<std_msgs::msg::Float64>(
+          "/velocity_pid_node/position_command",
+          rclcpp::SensorDataQoS(),
+          [this](std_msgs::msg::Float64::ConstSharedPtr msg) {
+            shadow_ext_pos_ref_ = msg->data;
+          });
+        vel_cmd_sub_ = this->create_subscription<std_msgs::msg::Float64>(
+          "/velocity_pid_node/velocity_command",
+          rclcpp::SensorDataQoS(),
+          [this](std_msgs::msg::Float64::ConstSharedPtr msg) {
+            shadow_ext_vel_ref_ = msg->data;
+          });
+        RCLCPP_INFO(this->get_logger(),
+          "Shadow PID will sync trajectory from /velocity_pid_node/{position,velocity}_command");
+      }
     }
 
     // ── Parameter callbacks ───────────────────────────────────────────────────────────────────
@@ -179,10 +216,11 @@ public:
 
     RCLCPP_INFO(
       this->get_logger(),
-      "ChronoFlapNode started [sil_mode=%s, use_shadow_pid=%s]: "
+      "ChronoFlapNode started [sil_mode=%s, use_shadow_pid=%s, shadow_sync_trajectory=%s]: "
       "publish=%.0f Hz, solver=%.0f Hz (%d substeps), "
       "flap=%.3fx%.3f m / %.4f kg, damping=%.4f, stiffness=%.4f, bearing=%.4f, coulomb=%.4f",
       sil_mode_ ? "true" : "false", use_shadow_pid_ ? "true" : "false",
+      shadow_sync_trajectory_ ? "true" : "false",
       rate_hz_, solver_rate_hz_, substeps_,
       flap_length_, flap_width_, flap_mass_,
       joint_damping_, joint_stiffness_, bearing_friction_, coulomb_friction_);
@@ -219,8 +257,14 @@ public:
       double torque_cmd = 0.0;
       double shadow_torque = 0.0;
       if (use_shadow_pid_) {
-        const double t = (this->now() - start_time_).seconds();
-        shadow_torque = shadow_pid_.compute(sim_position_, sim_velocity_, t, publish_dt_);
+        if (shadow_sync_trajectory_) {
+          // Use references synced from velocity_pid_node topics
+          shadow_torque = shadow_pid_.compute(
+            sim_position_, sim_velocity_, shadow_ext_pos_ref_, shadow_ext_vel_ref_, publish_dt_);
+        } else {
+          const double t = (this->now() - start_time_).seconds();
+          shadow_torque = shadow_pid_.compute(sim_position_, sim_velocity_, t, publish_dt_);
+        }
         torque_cmd    = shadow_torque;
       } else {
         torque_cmd = latest_torque_;
@@ -251,6 +295,8 @@ public:
 
       if (sil_mode_) {
         publish_joint_state();
+      } else {
+        publish_sim_joint_state();
       }
 
       auto elapsed = clock::now() - t_start;
@@ -522,6 +568,22 @@ private:
     joint_state_pub_->publish(js);
   }
 
+  // Publish sim joint states on /sim_joint_states for the second RSP (RViz overlay) in parallel mode
+  void publish_sim_joint_state()
+  {
+    sensor_msgs::msg::JointState js;
+    js.header.stamp = this->now();
+    js.name.push_back(joint_name_);
+    js.position.push_back(sim_position_);
+    js.velocity.push_back(sim_velocity_);
+    js.effort.push_back(0.0);
+    js.name.push_back("pto_joint");
+    js.position.push_back(0.0);
+    js.velocity.push_back(0.0);
+    js.effort.push_back(0.0);
+    sim_joint_state_pub_->publish(js);
+  }
+
   // ── Member variables ─────────────────────────────────────────────────────────────────────────
 
   // Mode & identity
@@ -550,6 +612,9 @@ private:
 
   // Shadow PID
   bool              use_shadow_pid_{true};
+  bool              shadow_sync_trajectory_{true};
+  double            shadow_ext_pos_ref_{0.0};
+  double            shadow_ext_vel_ref_{0.0};
   ShadowPidController shadow_pid_;
 
   // Runtime state
@@ -572,11 +637,14 @@ private:
 
   // ROS interfaces
   rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr effort_sub_;
+  rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr           pos_cmd_sub_;
+  rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr           vel_cmd_sub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              pos_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              vel_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              accel_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              shadow_torque_pub_;
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr        joint_state_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr        sim_joint_state_pub_;
 
   // Parameter callback handles
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr   on_set_handle_;

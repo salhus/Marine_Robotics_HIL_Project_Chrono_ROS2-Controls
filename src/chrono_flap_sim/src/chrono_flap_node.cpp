@@ -212,20 +212,26 @@ public:
       const double vel_before = sim_velocity_;
       // Run solver sub-steps
       // τ_total = τ_external - (B_joint + B_bearing)·ω - C_coulomb·sign(ω) - K·θ
+      // Use observer-corrected state (sim_position_/sim_velocity_) for the first substep
+      // so that stiffness and damping terms see the corrected angle/velocity from the
+      // observer feedback.  After each DoStepDynamics() call, read the integrated state
+      // back from motor_link_ for the subsequent substeps.
+      double current_angle = sim_position_;
+      double current_omega = sim_velocity_;
       for (int i = 0; i < substeps_; ++i) {
-        const double angle = motor_link_->GetMotorAngle();
-        const double omega = motor_link_->GetMotorAngleDt();
         const double total_damping = joint_damping_ + bearing_friction_;
-        const double coulomb = coulomb_friction_ * (omega > 0.0 ? 1.0 : (omega < 0.0 ? -1.0 : 0.0));
+        const double coulomb = coulomb_friction_ * (current_omega > 0.0 ? 1.0 : (current_omega < 0.0 ? -1.0 : 0.0));
         const double total_torque = latest_torque_
-                                  - total_damping    * omega
+                                  - total_damping    * current_omega
                                   - coulomb
-                                  - joint_stiffness_ * angle;
+                                  - joint_stiffness_ * current_angle;
         torque_fn_->SetSetpoint(total_torque, sys_->GetChTime());
         sys_->DoStepDynamics(solver_dt_);
+        current_angle = motor_link_->GetMotorAngle();
+        current_omega = motor_link_->GetMotorAngleDt();
       }
-      sim_position_ = motor_link_->GetMotorAngle();
-      sim_velocity_ = motor_link_->GetMotorAngleDt();
+      sim_position_ = current_angle;
+      sim_velocity_ = current_omega;
       // Luenberger observer correction (parallel mode only):
       //   θ_corrected = θ_predicted + α · (θ_measured − θ_predicted)
       //   ω_corrected = ω_predicted + β · (ω_measured − ω_predicted)

@@ -568,11 +568,11 @@ private:
     js.position.push_back(sim_position_);
     js.velocity.push_back(sim_velocity_);
     js.effort.push_back(latest_torque_);
-    // PTO joint is passive — publish zero so robot_state_publisher can compute TF for pto_link
-    js.name.push_back("pto_joint");
-    js.position.push_back(0.0);
-    js.velocity.push_back(0.0);
-    js.effort.push_back(0.0);
+    // pto_link/pto_joint commented out from URDF — no longer needed here
+    // js.name.push_back("pto_joint");
+    // js.position.push_back(0.0);
+    // js.velocity.push_back(0.0);
+    // js.effort.push_back(0.0);
     joint_state_pub_->publish(js);
   }
 
@@ -585,10 +585,11 @@ private:
     js.position.push_back(sim_position_);
     js.velocity.push_back(sim_velocity_);
     js.effort.push_back(0.0);
-    js.name.push_back("pto_joint");
-    js.position.push_back(0.0);
-    js.velocity.push_back(0.0);
-    js.effort.push_back(0.0);
+    // pto_link/pto_joint commented out from URDF — no longer needed here
+    // js.name.push_back("pto_joint");
+    // js.position.push_back(0.0);
+    // js.velocity.push_back(0.0);
+    // js.effort.push_back(0.0);
     sim_joint_state_pub_->publish(js);
   }
 

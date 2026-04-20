@@ -100,6 +100,14 @@ def generate_launch_description():
         output="both",
     )
 
+    # Identity transform: sim/base_link overlaid exactly on base_link (x y z yaw pitch roll)
+    static_tf_sim = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=["0", "0", "0", "0", "0", "0", "base_link", "sim/base_link"],
+        output="both",
+    )
+
     return LaunchDescription(
         declared_arguments
         + [
@@ -111,5 +119,6 @@ def generate_launch_description():
             pto_controller_spawner,
             velocity_pid_node,
             chrono_flap_node,
+            static_tf_sim,
         ]
     )

@@ -190,12 +190,14 @@ public:
           rclcpp::SensorDataQoS(),
           [this](std_msgs::msg::Float64::ConstSharedPtr msg) {
             shadow_ext_pos_ref_ = msg->data;
+            shadow_pos_ref_received_ = true;
           });
         vel_cmd_sub_ = this->create_subscription<std_msgs::msg::Float64>(
           "/velocity_pid_node/velocity_command",
           rclcpp::SensorDataQoS(),
           [this](std_msgs::msg::Float64::ConstSharedPtr msg) {
             shadow_ext_vel_ref_ = msg->data;
+            shadow_vel_ref_received_ = true;
           });
         RCLCPP_INFO(this->get_logger(),
           "Shadow PID will sync trajectory from /velocity_pid_node/{position,velocity}_command");
@@ -258,9 +260,15 @@ public:
       double shadow_torque = 0.0;
       if (use_shadow_pid_) {
         if (shadow_sync_trajectory_) {
-          // Use references synced from velocity_pid_node topics
-          shadow_torque = shadow_pid_.compute(
-            sim_position_, sim_velocity_, shadow_ext_pos_ref_, shadow_ext_vel_ref_, publish_dt_);
+          if (shadow_pos_ref_received_ && shadow_vel_ref_received_) {
+            // Use references synced from velocity_pid_node topics
+            shadow_torque = shadow_pid_.compute(
+              sim_position_, sim_velocity_, shadow_ext_pos_ref_, shadow_ext_vel_ref_, publish_dt_);
+          } else {
+            // External refs not yet received — hold at zero until velocity_pid_node is ready
+            shadow_torque = shadow_pid_.compute(
+              sim_position_, sim_velocity_, 0.0, 0.0, publish_dt_);
+          }
         } else {
           const double t = (this->now() - start_time_).seconds();
           shadow_torque = shadow_pid_.compute(sim_position_, sim_velocity_, t, publish_dt_);
@@ -615,6 +623,8 @@ private:
   bool              shadow_sync_trajectory_{true};
   double            shadow_ext_pos_ref_{0.0};
   double            shadow_ext_vel_ref_{0.0};
+  bool              shadow_pos_ref_received_{false};
+  bool              shadow_vel_ref_received_{false};
   ShadowPidController shadow_pid_;
 
   // Runtime state

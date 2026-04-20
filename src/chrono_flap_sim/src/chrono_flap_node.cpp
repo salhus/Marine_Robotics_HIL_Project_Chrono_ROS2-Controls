@@ -73,7 +73,7 @@ public:
     // Physical flap properties (30 cm × 30 cm × 0.25 cm acrylic)
     this->declare_parameter<double>("flap_length_m", 0.30);
     this->declare_parameter<double>("flap_width_m", 0.30);
-    this->declare_parameter<double>("flap_mass_kg", 0.5);
+    this->declare_parameter<double>("flap_mass_kg", 0.21);
     // Joint dynamics
     this->declare_parameter<double>("joint_damping", 0.0);
     this->declare_parameter<double>("joint_stiffness", 0.712441);
@@ -463,7 +463,7 @@ private:
   int         substeps_{10};
   double      flap_length_{0.30};
   double      flap_width_{0.30};
-  double      flap_mass_{0.5};
+  double      flap_mass_{0.21};
   double      joint_damping_{0.0};
   double      joint_stiffness_{0.712441};
   double      bearing_friction_{0.005};

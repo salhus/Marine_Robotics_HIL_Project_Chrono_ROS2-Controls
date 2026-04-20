@@ -5,10 +5,10 @@
 // Architecture overview:
 //   Three operating modes are selected by the `control_mode` parameter:
 //
-//   "position_only":
-//     Outer position PID drives the torque directly.  Useful for checking position gains before
-//     enabling the full cascade.  The sine trajectory produces a position reference; the position
-//     PID output is saturated and sent directly as torque.
+//   "position_only" (default):
+//     Outer position PID drives the torque directly.  Good baseline for stable, smooth operation.
+//     The sine trajectory produces a position reference; the position PID output is saturated and
+//     sent directly as torque.
 //
 //   "cascade" (recommended for full trajectory tracking):
 //     Outer loop (position PID) → velocity command → inner loop (velocity PID) → torque.

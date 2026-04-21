@@ -81,8 +81,8 @@ public:
 
     // ── Joint dynamics ───────────────────────────────────────────────────────────────────────
     this->declare_parameter<double>("joint_damping", 0.0);
-    this->declare_parameter<double>("joint_stiffness", 0.712441);
-    this->declare_parameter<double>("bearing_friction", 0.4);
+    this->declare_parameter<double>("joint_stiffness", 0.312441);
+    this->declare_parameter<double>("bearing_friction", 0.01);
     this->declare_parameter<double>("coulomb_friction", 0.0);
 
     // ── Shadow PID toggle ────────────────────────────────────────────────────────────────────

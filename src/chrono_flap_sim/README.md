@@ -5,17 +5,17 @@ flap on a revolute joint. The node supports two operating modes — **SIL** (Sof
 no hardware required) and **parallel/shadow** (runs alongside real ODrive hardware for model
 validation) — and exposes all physical parameters for online reconfiguration via `rqt_reconfigure`.
 
-In parallel mode the node can optionally run an internal **shadow PID controller** that closes the
+In both SIL and parallel modes, the node runs an internal **shadow PID controller** that closes the
 simulation loop using `sim_position` / `sim_velocity` as feedback, mirroring the exact same
 cascade/position-only/velocity-only logic as `velocity_pid_node`.  This makes the simulation
 self-stabilising — any mismatch between sim and real is purely due to model error rather than
 open-loop instability.
 
-When running in parallel mode with `shadow_sync_trajectory=true` (the default), the shadow PID
-automatically subscribes to the `velocity_pid_node`'s published
-`/velocity_pid_node/position_command` and `/velocity_pid_node/velocity_command` topics and uses
-those as its reference.  This means you only set the trajectory in one place (the real
-controller) and both the hardware and Chrono shadow track the same reference automatically.
+With `shadow_sync_trajectory=true` (the default in both modes), the shadow PID automatically
+subscribes to the `velocity_pid_node`'s published `/velocity_pid_node/position_command` and
+`/velocity_pid_node/velocity_command` topics and uses those as its reference.  This means you
+only set the trajectory in one place (the real controller) and both the hardware and Chrono shadow
+track the same reference automatically.
 
 In parallel mode the node also publishes `/sim_joint_states` so a second `robot_state_publisher`
 can drive a `sim/`-prefixed TF tree.  This lets you overlay **both** the real hardware flap and
@@ -37,7 +37,7 @@ the Chrono sim flap in RViz simultaneously.
 
 | Mode | `sil_mode` | Publishes `/joint_states` | Role |
 |---|---|---|---|
-| **SIL** | `true` | ✓ at `rate_hz` | Acts as the plant; PID closes loop through simulation |
+| **SIL** | `true` | ✓ at `rate_hz` | Acts as the plant; shadow PID drives Chrono, `velocity_pid_node` torque available for comparison |
 | **Parallel** | `false` (default) | ✗ | Shadows the real hardware; publishes `~/sim_*` for comparison |
 
 ---
@@ -82,14 +82,18 @@ explicitly in the torque law above.
 ### SIL mode (`sil_mode:=true`)
 
 `chrono_flap_node` publishes `sensor_msgs/JointState` on `/joint_states`, replacing
-`joint_state_broadcaster`. The `velocity_pid_node` closes the control loop through the
-simulation. No ODrive, CAN bus, or motor is needed.
+`joint_state_broadcaster`. The shadow PID drives the Chrono plant using the trajectory synced
+from `velocity_pid_node`. The `velocity_pid_node` still computes torque from `/joint_states`
+feedback, but its torque output is for **comparison only** — plot `~/shadow_torque` vs
+`/motor_effort_controller/commands` for an apples-to-apples controller comparison. No ODrive,
+CAN bus, or motor is needed.
 
 ```
-chrono_flap_node (sil_mode=true)
-      │  /joint_states (100 Hz)
-      ▼
-velocity_pid_node ──/motor_effort_controller/commands──▶ chrono_flap_node
+velocity_pid_node (trajectory generator)
+  │  ~/position_command    ~/velocity_command
+  ▼                        ▼
+chrono_flap_node (shadow PID drives Chrono plant)
+  │  /joint_states ──▶ velocity_pid_node (torque output = compare against ~/shadow_torque)
 ```
 
 **Typical launch:**
@@ -147,6 +151,30 @@ ros2 run odrive_velocity_pid velocity_pid_node --ros-args \
   -p position_setpoint:=0.5
 ```
 
+### Apples-to-apples torque comparison (SIL mode)
+
+With `shadow_sync_trajectory=true` (the default), the shadow PID drives the Chrono plant using
+the same trajectory references as `velocity_pid_node`. Both controllers see identical trajectory
+references and the same plant feedback (`/joint_states`), so you can compare their torque outputs
+directly:
+
+| Topic | Source | Description |
+|---|---|---|
+| `~/shadow_torque` | Shadow PID (drives the plant) | Internal PID torque command |
+| `/motor_effort_controller/commands` | `velocity_pid_node` | External controller torque (comparison) |
+| `~/sim_position` | Chrono plant | Sim state — same feedback for both controllers |
+| `~/sim_velocity` | Chrono plant | Sim state — same feedback for both controllers |
+
+```bash
+# Verify sim is running (not stuck at 0)
+ros2 topic hz /joint_states
+ros2 topic echo /chrono_flap_node/sim_position --once
+
+# Compare torques
+ros2 topic echo /chrono_flap_node/shadow_torque --once
+ros2 topic echo /motor_effort_controller/commands --once
+```
+
 ### Parallel mode (`sil_mode:=false`, default)
 
 The real ODrive owns `/joint_states`. `chrono_flap_node` subscribes to the same torque command
@@ -166,7 +194,7 @@ generates the same sine trajectory as `velocity_pid_node`.  All gains are prefix
 `shadow_` to avoid collision with the real controller's parameters and are fully
 runtime-reconfigurable via `rqt_reconfigure`.
 
-**Trajectory synchronisation (`shadow_sync_trajectory:=true`, default in parallel mode):**
+**Trajectory synchronisation (`shadow_sync_trajectory:=true`, default in both modes):**
 Instead of duplicating `shadow_position_setpoint`, `shadow_amplitude_rad_s`, and
 `shadow_omega_rad_s` params, the shadow PID subscribes to:
 - `/velocity_pid_node/position_command` → used as `pos_ref`
@@ -176,8 +204,11 @@ This way you only change the trajectory in the real controller and both hardware
 automatically track the same reference.  The shadow PID gains (`shadow_kp`, `shadow_ki`, etc.)
 remain independent.
 
-In **SIL mode** `shadow_sync_trajectory` is automatically forced to `false` to avoid the circular
-dependency (velocity_pid_node IS the controller in SIL mode).
+`shadow_sync_trajectory=true` works in both SIL and parallel modes. In SIL mode, the shadow PID
+syncs trajectory from `velocity_pid_node`'s `~/position_command` and `~/velocity_command` and
+drives the plant, while `velocity_pid_node`'s actual torque output serves as a comparison
+baseline. There is no circular dependency because the trajectory references come from
+`velocity_pid_node`'s internal generator, not from `/joint_states` feedback.
 
 ```
 ODrive HW ──/joint_states──▶ velocity_pid_node ──/motor_effort_controller/commands──▶ ODrive HW
@@ -250,10 +281,10 @@ gains so the sim uses identical control logic.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `shadow_sync_trajectory` | bool | `true` | Subscribe to `/velocity_pid_node/{position,velocity}_command` for shadow PID references instead of generating an internal sine trajectory. Automatically forced `false` in SIL mode. |
+| `shadow_sync_trajectory` | bool | `true` | Subscribe to `/velocity_pid_node/{position,velocity}_command` for shadow PID references instead of generating an internal sine trajectory. Works in both SIL and parallel modes. |
 | `shadow_control_mode` | string | `position_only` | Active control mode: `position_only`, `cascade`, or `velocity_only` |
 
-When `shadow_sync_trajectory=true` (parallel mode default), the `shadow_position_setpoint`,
+When `shadow_sync_trajectory=true` (default in both modes), the `shadow_position_setpoint`,
 `shadow_amplitude_rad_s`, and `shadow_omega_rad_s` parameters below are **ignored**.  Set
 trajectory parameters on `velocity_pid_node` only.
 
@@ -330,8 +361,8 @@ All `~/` topics are scoped under the node name (e.g. `/chrono_flap_node/sim_posi
 | Topic | Type | Condition | Description |
 |---|---|---|---|
 | `/motor_effort_controller/commands` | `std_msgs/Float64MultiArray` | Always | Torque input from real controller (N·m); used when `use_shadow_pid=false` |
-| `/velocity_pid_node/position_command` | `std_msgs/Float64` | Parallel mode + `shadow_sync_trajectory=true` | Position reference for shadow PID synced from the real controller |
-| `/velocity_pid_node/velocity_command` | `std_msgs/Float64` | Parallel mode + `shadow_sync_trajectory=true` | Velocity feedforward reference for shadow PID synced from the real controller |
+| `/velocity_pid_node/position_command` | `std_msgs/Float64` | `shadow_sync_trajectory=true` (both modes) | Position reference for shadow PID synced from the real controller |
+| `/velocity_pid_node/velocity_command` | `std_msgs/Float64` | `shadow_sync_trajectory=true` (both modes) | Velocity feedforward reference for shadow PID synced from the real controller |
 
 ---
 

@@ -15,13 +15,18 @@ Two operating modes are supported, selectable via the `sil_mode` parameter on `c
 
 ### SIL mode (`sil_mode:=true`) — no hardware required
 
-`chrono_flap_node` acts as the plant: it publishes `sensor_msgs/JointState` on `/joint_states`, and `velocity_pid_node` closes the control loop entirely through the simulation. No ODrive, CAN bus, or motor is needed.
+`chrono_flap_node` acts as the plant: it publishes `sensor_msgs/JointState` on `/joint_states`.
+The shadow PID drives the Chrono plant using the trajectory synced from `velocity_pid_node`.
+`velocity_pid_node` still computes torque from `/joint_states` feedback, but its torque output is
+for **comparison only** — plot `~/shadow_torque` vs `/motor_effort_controller/commands` for an
+apples-to-apples controller comparison. No ODrive, CAN bus, or motor is needed.
 
 ```
-chrono_flap_node (sil_mode=true)
-        │  publishes /joint_states
-        ▼
-velocity_pid_node ──/motor_effort_controller/commands──▶ chrono_flap_node
+velocity_pid_node (trajectory generator)
+  │  ~/position_command    ~/velocity_command
+  ▼                        ▼
+chrono_flap_node (shadow PID drives Chrono plant)
+  │  /joint_states ──▶ velocity_pid_node (torque output = compare against ~/shadow_torque)
 ```
 
 ### Parallel mode (`sil_mode:=false`, default) — hardware shadow
@@ -354,6 +359,8 @@ In **SIL mode**, all kinematics come from the simulation:
 | `/chrono_flap_node/sim_position` | Simulated joint angle (rad) |
 | `/chrono_flap_node/sim_velocity` | Simulated joint angular velocity (rad/s) |
 | `/chrono_flap_node/sim_acceleration` | Simulated joint angular acceleration (rad/s²) |
+| `/chrono_flap_node/shadow_torque` | Shadow PID torque (drives the plant) |
+| `/motor_effort_controller/commands` | `velocity_pid_node` torque (comparison) |
 | `/velocity_pid_node/measured_position` | Same as sim_position (PID reads from /joint_states → chrono) |
 | `/velocity_pid_node/position_error` | Closed-loop position error (rad) |
 
@@ -387,14 +394,14 @@ When the sim model is accurate the two flaps overlap. Divergence = model error.
 > resources and the second won't render visuals. That is why `motor_sim.urdf.xacro` uses
 > different material names (orange, semi-transparent) — it is otherwise identical geometry.
 
-### `shadow_sync_trajectory` (parallel mode)
+### `shadow_sync_trajectory` (both modes)
 
-In parallel mode, `chrono_flap_node` runs an internal **shadow PID** that mirrors the real
-controller's trajectory. With `shadow_sync_trajectory=true` (the default), the shadow PID
-subscribes to `/velocity_pid_node/position_command` and `/velocity_pid_node/velocity_command` for
-its reference — so you only set the trajectory in one place and both hardware and simulation track
-the same reference automatically. See [`src/chrono_flap_sim/README.md`](src/chrono_flap_sim/README.md)
-for full details.
+In both SIL and parallel modes, `chrono_flap_node` runs an internal **shadow PID** that mirrors
+the trajectory from `velocity_pid_node`. With `shadow_sync_trajectory=true` (the default in both
+modes), the shadow PID subscribes to `/velocity_pid_node/position_command` and
+`/velocity_pid_node/velocity_command` for its reference — so you only set the trajectory in one
+place and both hardware and simulation track the same reference automatically. See
+[`src/chrono_flap_sim/README.md`](src/chrono_flap_sim/README.md) for full details.
 
 ---
 
@@ -403,10 +410,13 @@ for full details.
 ### SIL mode (no hardware)
 
 ```
-chrono_flap_node (sil_mode=true) → /joint_states → velocity_pid_node → /motor_effort_controller/commands → chrono_flap_node
+velocity_pid_node (trajectory generator)
+  │  ~/position_command    ~/velocity_command
+  ▼                        ▼
+chrono_flap_node (shadow PID drives Chrono plant, sil_mode=true) → /joint_states → velocity_pid_node → /motor_effort_controller/commands (comparison only)
 ```
 
-`chrono_flap_node` publishes `/joint_states` at 100 Hz, replacing `joint_state_broadcaster`. `velocity_pid_node` is unaware of the source — the interface is identical.
+`chrono_flap_node` publishes `/joint_states` at 100 Hz, replacing `joint_state_broadcaster`. The shadow PID drives the plant using trajectory synced from `velocity_pid_node`. `velocity_pid_node` is unaware of the source — the interface is identical. Its torque output (`/motor_effort_controller/commands`) is available for comparison against `~/shadow_torque`.
 
 ### Parallel mode (with hardware)
 

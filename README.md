@@ -10,11 +10,11 @@ A Project Chrono multibody simulation (`chrono_flap_node`) runs alongside the co
 
 ---
 
-## Dual-mode operation
+## Three operating modes
 
-Two operating modes are supported, selectable via the `sil_mode` parameter on `chrono_flap_node`:
+Three operating modes are supported, selectable via the `mode` parameter on `chrono_flap_node` (the legacy `sil_mode` bool is retained for backward compatibility):
 
-### SIL mode (`sil_mode:=true`) — no hardware required
+### SIL mode (`mode:=sil`) — no hardware required
 
 `chrono_flap_node` acts as the plant: it publishes `sensor_msgs/JointState` on `/joint_states`.
 The shadow PID drives the Chrono plant using the trajectory synced from `velocity_pid_node`.
@@ -30,7 +30,7 @@ chrono_flap_node (shadow PID drives Chrono plant)
   │  /joint_states ──▶ velocity_pid_node (torque output = compare against ~/shadow_torque)
 ```
 
-### Parallel mode (`sil_mode:=false`, default) — hardware shadow
+### Parallel mode (`mode:=parallel`, default) — hardware shadow
 
 The real ODrive owns `/joint_states` via `joint_state_broadcaster`. `chrono_flap_node` reads the same torque commands the real hardware receives but does **not** publish `/joint_states`. Simulated and measured kinematics can be compared side-by-side in PlotJuggler to validate the identified plant model.
 
@@ -145,16 +145,59 @@ ros2 run odrive_velocity_pid velocity_pid_node --ros-args \
 
 ## Quick start: parallel mode (with hardware)
 
+Use the canonical parallel-mode launcher, which also brings up rqt_reconfigure, PlotJuggler, and RViz2:
+
 ```bash
 # Terminal 1 — CAN bus
 sudo ip link set can0 down 2>/dev/null || true
 sudo ip link set can0 up type can bitrate 250000
 
-# Terminal 2 — Hardware stack (ros2_control + ODrive + PID + Chrono shadow)
-ros2 launch hil_odrive_ros2_control motor_control.launch.py
+# Terminal 2 — Hardware stack (ros2_control + ODrive + PID + Chrono shadow + tooling)
+ros2 launch hil_odrive_ros2_control parallel_mode.launch.py
+```
 
-# Terminal 3 — Chrono shadow (optional, if not started by launch file)
-ros2 run chrono_flap_sim chrono_flap_node --ros-args -p bearing_friction:=0.4
+The legacy `motor_control.launch.py` is equivalent and now also launches the same tooling by default:
+
+```bash
+ros2 launch hil_odrive_ros2_control motor_control.launch.py
+```
+
+Both launchers accept the same tooling arguments:
+
+```bash
+ros2 launch hil_odrive_ros2_control parallel_mode.launch.py \
+  enable_rqt:=false \
+  enable_plotjuggler:=false \
+  enable_rviz:=false
+```
+
+---
+
+## Quick start: HIL mode (with hardware)
+
+HIL mode requires CAN to be up and the hardware stack running. A dedicated launch file starts
+everything including the tooling:
+
+```bash
+# Terminal 1 — CAN bus
+sudo ip link set can0 down 2>/dev/null || true
+sudo ip link set can0 up type can bitrate 250000
+
+# Terminal 2 — HIL stack (hardware + velocity_pid_node + chrono_flap_node (mode=hil) + hil_torque_mixer + tooling)
+ros2 launch hil_odrive_ros2_control hil_mode.launch.py
+```
+
+The load torque starts **disengaged** by default for safety. Engage once you've verified the
+system is running correctly:
+
+```bash
+ros2 service call /chrono_flap_node/engage_hil std_srvs/srv/SetBool "{data: true}"
+```
+
+Disengage at any time:
+
+```bash
+ros2 service call /chrono_flap_node/engage_hil std_srvs/srv/SetBool "{data: false}"
 ```
 
 ---
@@ -261,10 +304,28 @@ source install/setup.bash
 ```bash
 source /opt/ros/jazzy/setup.bash
 source install/setup.bash
+ros2 launch hil_odrive_ros2_control parallel_mode.launch.py
+```
+
+This starts `ros2_control_node`, `robot_state_publisher`, `sim_robot_state_publisher` (namespace `sim`, loads `motor_sim.urdf.xacro`), `static_transform_publisher` (identity: `base_link` → `sim/base_link`), `joint_state_broadcaster`, `motor_effort_controller`, `velocity_pid_node`, `chrono_flap_node`, `rqt_reconfigure`, `plotjuggler`, and `rviz2`.
+
+The legacy `motor_control.launch.py` is identical and now also launches the tooling by default:
+
+```bash
 ros2 launch hil_odrive_ros2_control motor_control.launch.py
 ```
 
-This starts `ros2_control_node`, `robot_state_publisher`, `sim_robot_state_publisher` (namespace `sim`, loads `motor_sim.urdf.xacro`), `static_transform_publisher` (identity: `base_link` → `sim/base_link`), `joint_state_broadcaster`, `motor_effort_controller`, `velocity_pid_node`, and `chrono_flap_node`.
+### Tooling arguments (all three launch files)
+
+| Argument | Default | Description |
+|---|---|---|
+| `enable_rqt` | `true` | Launch `rqt_reconfigure` |
+| `enable_plotjuggler` | `true` | Launch PlotJuggler |
+| `enable_rviz` | `true` | Launch RViz2 |
+| `rviz_config` | `""` | Path to `.rviz` config (empty = defaults) |
+| `plotjuggler_layout` | `""` | Path to PlotJuggler `.xml` layout (empty = defaults) |
+
+Disable any tool with e.g. `enable_rviz:=false`.
 
 ---
 
@@ -473,6 +534,34 @@ CAN → ODrive HW plugin → electrical_power, mechanical_power state interfaces
 `velocity_pid_node` is a **standalone node** — not a ros2_control controller plugin. It reads
 `/joint_states` published by `joint_state_broadcaster` (hardware) or `chrono_flap_node` (SIL) and
 writes directly to the effort controller's command topic.
+
+### HIL mode (real hardware + simulated load torque)
+
+```
+ODrive → /joint_states (θ_meas, ω_meas) ──┬──► velocity_pid_node ──► /velocity_pid_node/torque_command (τ_pid)
+                                           │
+                                           └──► chrono_flap_node (mode=hil)
+                                                      │ (Chrono evaluates τ_hydro = f(θ_meas, ω_meas, t),
+                                                      │  watchdog + clamp + engage gate + ramp-in)
+                                                      ▼
+                                                 /chrono_flap_node/load_torque (τ_hydro)
+                                                      │
+/velocity_pid_node/torque_command (τ_pid) ───────────┐│
+                                                     ▼▼
+                                         hil_torque_mixer_node
+                                           (independent watchdogs + hard clamp)
+                                                      │
+                                                      ▼
+                                      /motor_effort_controller/commands (τ_total)
+                                                      │
+                                                      ▼
+                                                   ODrive (axis0)
+```
+
+Key invariants: `velocity_pid_node`'s effort output is **remapped at launch time** to
+`/velocity_pid_node/torque_command` (not directly to `/motor_effort_controller/commands`). The
+`hil_torque_mixer_node` is the **only** node that writes to `/motor_effort_controller/commands` in
+HIL mode. Load torque starts disengaged; engage via the service above.
 
 ---
 

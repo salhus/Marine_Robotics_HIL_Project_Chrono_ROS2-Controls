@@ -72,3 +72,10 @@ To disable the load torque contribution at runtime:
 ```bash
 ros2 service call /hil_torque_mixer_node/enable_load std_srvs/srv/SetBool "{data: false}"
 ```
+
+## Future: active PTO migration (axis1)
+
+When axis1 becomes an actively controlled Power Take-Off joint, the only change required in this
+node is the `output_topic` parameter (point it at axis1's effort topic). Alternatively, the load
+torque can be published directly to axis1's effort topic and the mixer is bypassed for axis1
+entirely. No logic changes are needed in `hil_torque_mixer_node`.

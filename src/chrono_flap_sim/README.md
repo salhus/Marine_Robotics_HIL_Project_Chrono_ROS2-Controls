@@ -37,11 +37,11 @@ the Chrono sim flap in RViz simultaneously.
 
 ### Operating modes
 
-| Mode | `mode` param | `sil_mode` | Publishes `/joint_states` | Role |
-|---|---|---|---|---|
-| **SIL** | `"sil"` | `true` | ✓ at `rate_hz` | Acts as the plant; shadow PID drives Chrono, `velocity_pid_node` torque available for comparison |
-| **Parallel** | `"parallel"` (default) | `false` | ✗ | Shadows the real hardware; publishes `~/sim_*` for comparison |
-| **HIL** | `"hil"` | N/A | ✗ | Evaluates τ_hydro from measured (θ, ω); publishes `~/load_torque`; no Chrono dynamics integration for control |
+| Mode | `mode` param | `sil_mode` | Publishes `/joint_states` | Writes to `/motor_effort_controller/commands` | `use_shadow_pid` / `shadow_sync_trajectory` | Load-model feedback | Role |
+|---|---|---|---|---|---|---|---|
+| **SIL** | `"sil"` | `true` | ✓ at `rate_hz` | ✗ (torque output is comparison only) | ✓ applies | Chrono integration | Acts as the plant; shadow PID drives Chrono, `velocity_pid_node` torque available for comparison |
+| **Parallel** | `"parallel"` (default) | `false` | ✗ | ✗ | ✓ applies | Chrono integration from cmd + observer | Shadows the real hardware; publishes `~/sim_*` for comparison |
+| **HIL** | `"hil"` | N/A | ✗ | ✗ (mixer does) | ✗ forced off | Real `/joint_states` (θ_meas, ω_meas) | Evaluates τ_hydro from measured state; publishes `~/load_torque`; no Chrono dynamics integration for control |
 
 The legacy `sil_mode` bool is kept for backward compatibility: if `mode` is unset, `sil_mode=true`
 selects SIL and `sil_mode=false` selects parallel. If both are set and inconsistent, `mode` wins.
@@ -352,11 +352,12 @@ trajectory parameters on `velocity_pid_node` only.
 | Topic | Type | Condition | Description |
 |---|---|---|---|
 | `/joint_states` | `sensor_msgs/JointState` | SIL mode only (`sil_mode=true`) | Simulated joint position and velocity for `motor_joint`; replaces `joint_state_broadcaster`, enabling `robot_state_publisher` to compute TFs |
-| `/sim_joint_states` | `sensor_msgs/JointState` | Parallel mode only (`sil_mode=false`) | Simulated joint position for `motor_joint` only; consumed by the second `robot_state_publisher` (namespace `sim`, `frame_prefix='sim/'`) to drive the sim TF tree for RViz overlay |
-| `~/sim_position` | `std_msgs/Float64` | Always | Simulated joint angle (rad) |
-| `~/sim_velocity` | `std_msgs/Float64` | Always | Simulated joint angular velocity (rad/s) |
-| `~/sim_acceleration` | `std_msgs/Float64` | Always | Simulated joint angular acceleration (rad/s²) |
-| `~/shadow_torque` | `std_msgs/Float64` | Always | Torque command applied to Chrono (shadow PID output when `use_shadow_pid=true`, else `0.0`) |
+| `/sim_joint_states` | `sensor_msgs/JointState` | Parallel and HIL modes (`sil_mode=false`) | Simulated joint position for `motor_joint` only; consumed by the second `robot_state_publisher` (namespace `sim`, `frame_prefix='sim/'`) to drive the sim TF tree for RViz overlay |
+| `~/sim_position` | `std_msgs/Float64` | Always | Simulated joint angle (rad); in HIL mode this passes through the measured θ |
+| `~/sim_velocity` | `std_msgs/Float64` | Always | Simulated joint angular velocity (rad/s); in HIL mode passes through the measured ω |
+| `~/sim_acceleration` | `std_msgs/Float64` | Always | Simulated joint angular acceleration (rad/s²); in HIL mode computed as Δω/Δt |
+| `~/shadow_torque` | `std_msgs/Float64` | SIL and Parallel modes | Torque command applied to Chrono (shadow PID output when `use_shadow_pid=true`, else `0.0`) |
+| `~/load_torque` | `std_msgs/Float64` | HIL mode only | Hydrodynamic load torque τ_hydro evaluated from measured (θ, ω); published to `hil_torque_mixer_node` |
 
 All `~/` topics are scoped under the node name (e.g. `/chrono_flap_node/sim_position`).
 

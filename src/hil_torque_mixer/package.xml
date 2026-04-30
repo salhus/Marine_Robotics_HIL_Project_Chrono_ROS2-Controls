@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>hil_torque_mixer</name>
+  <version>0.1.0</version>
+  <description>HIL torque mixer node. Sums τ_pid (from velocity_pid_node) and τ_hydro
+  (from chrono_flap_node in HIL mode) with independent watchdogs and a hard safety clamp,
+  then publishes the combined command to the real motor effort controller.</description>
+  <maintainer email="todo@example.com">Maintainer</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

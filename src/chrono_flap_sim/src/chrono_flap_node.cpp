@@ -2,18 +2,28 @@
 //
 // ChronoFlapNode — Project Chrono inverted-pendulum flap simulation.
 //
-// Two operating modes:
+// Three operating modes (selected via the `mode` string parameter):
 //
-//   sil_mode = true   Software-in-the-Loop: Chrono publishes /joint_states so the
-//                     velocity_pid_node closes the loop through the sim. No hardware.
+//   mode = "sil"       Software-in-the-Loop: Chrono publishes /joint_states so the
+//                      velocity_pid_node closes the loop through the sim. No hardware.
 //
-//   sil_mode = false  Parallel/shadow: Chrono shadows the real hardware.
-//                     With use_shadow_pid=true (default), an internal closed-loop shadow PID
-//                     drives the sim using sim_position / sim_velocity as feedback, making it
-//                     inherently stable.  With use_shadow_pid=false, the torque command from
-//                     the real controller is fed open-loop into Chrono.
+//   mode = "parallel"  Parallel/shadow: Chrono shadows the real hardware.
+//                      With use_shadow_pid=true (default), an internal closed-loop shadow PID
+//                      drives the sim using sim_position / sim_velocity as feedback, making it
+//                      inherently stable.  With use_shadow_pid=false, the torque command from
+//                      the real controller is fed open-loop into Chrono.
 //
-// Torque law each sub-step:
+//   mode = "hil"       Hardware-in-the-Loop: the real motor + encoder + velocity_pid_node
+//                      close the loop. Chrono evaluates τ_hydro = f(θ_meas, ω_meas, t)
+//                      from measured state (no Chrono dynamics integration for control).
+//                      Publishes τ_hydro on ~/load_torque for hil_torque_mixer to sum
+//                      with τ_pid before commanding the real motor.
+//
+// The legacy `sil_mode` bool parameter is kept for backward compatibility:
+//   sil_mode=true  → mode="sil"  (if `mode` not set)
+//   sil_mode=false → mode="parallel" (if `mode` not set)
+//
+// Torque law each sub-step (SIL/Parallel):
 //   τ_total = τ_cmd − (B_joint + B_bearing)·ω − C_coulomb·sign(ω) − K·θ
 //
 #include <chrono>
@@ -27,6 +37,7 @@
 #include "std_msgs/msg/float64.hpp"
 #include "std_msgs/msg/float64_multi_array.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
+#include "std_srvs/srv/set_bool.hpp"
 // Project Chrono headers
 #include "chrono/physics/ChSystemNSC.h"
 #include "chrono/physics/ChBody.h"
@@ -64,6 +75,9 @@ public:
     sim_acceleration_(0.0)
   {
     // ── Mode & identity ──────────────────────────────────────────────────────────────────────
+    // `mode` takes precedence over the legacy `sil_mode` bool for backward compatibility.
+    // Default "" means "derive from sil_mode". Allowed explicit values: "sil", "parallel", "hil".
+    this->declare_parameter<std::string>("mode", "");
     this->declare_parameter<bool>("sil_mode", false);
     this->declare_parameter<std::string>("joint_name", "motor_joint");
     this->declare_parameter<std::string>("joint_state_topic", "/joint_states");
@@ -123,8 +137,49 @@ public:
     this->declare_parameter<double>("shadow_outer_loop_divider", 1.0);
     this->declare_parameter<double>("shadow_filter_alpha",       0.90);
 
+    // ── HIL parameters ────────────────────────────────────────────────────────────────────────
+    this->declare_parameter<double>("hil_constant_load_nm",     0.1);
+    this->declare_parameter<double>("hil_virtual_stiffness",    0.0);
+    this->declare_parameter<double>("hil_virtual_damping",      0.0);
+    this->declare_parameter<double>("hil_quadratic_drag",       0.0);
+    this->declare_parameter<double>("hil_wave_amp_nm",          0.0);
+    this->declare_parameter<double>("hil_wave_omega_rad_s",     0.0);
+    this->declare_parameter<double>("hil_torque_clip_nm",       0.3);
+    this->declare_parameter<double>("hil_feedback_timeout_s",   0.1);
+    this->declare_parameter<double>("hil_ramp_time_s",          1.0);
+    this->declare_parameter<bool>  ("hil_engaged_default",      false);
+    this->declare_parameter<std::string>("hil_load_topic",      "~/load_torque");
+
     // ── Read parameters ───────────────────────────────────────────────────────────────────────
-    sil_mode_          = this->get_parameter("sil_mode").as_bool();
+    // Resolve mode: prefer explicit `mode` param; fall back to sil_mode bool.
+    const std::string mode_param = this->get_parameter("mode").as_string();
+    const bool        sil_mode_bool = this->get_parameter("sil_mode").as_bool();
+
+    if (!mode_param.empty()) {
+      // Explicit mode set — validate and use it
+      if (mode_param != "sil" && mode_param != "parallel" && mode_param != "hil") {
+        RCLCPP_WARN(this->get_logger(),
+          "Invalid mode='%s'. Allowed: sil, parallel, hil. Defaulting to 'parallel'.",
+          mode_param.c_str());
+        mode_ = "parallel";
+      } else {
+        mode_ = mode_param;
+        // Warn if sil_mode is also set and inconsistent
+        if (mode_ == "sil" && !sil_mode_bool) {
+          RCLCPP_WARN(this->get_logger(),
+            "mode='sil' but sil_mode=false — preferring mode='sil'.");
+        } else if (mode_ == "parallel" && sil_mode_bool) {
+          RCLCPP_WARN(this->get_logger(),
+            "mode='parallel' but sil_mode=true — preferring mode='parallel'.");
+        }
+      }
+    } else {
+      // Legacy path: derive from sil_mode bool
+      mode_ = sil_mode_bool ? "sil" : "parallel";
+    }
+
+    // Legacy sil_mode_ field for any remaining references
+    sil_mode_ = (mode_ == "sil");
     joint_name_        = this->get_parameter("joint_name").as_string();
     joint_state_topic_ = this->get_parameter("joint_state_topic").as_string();
     effort_topic_      = this->get_parameter("effort_topic").as_string();
@@ -147,6 +202,28 @@ public:
 
     read_shadow_params();
 
+    // ── HIL parameter reads ───────────────────────────────────────────────────────────────────
+    hil_constant_load_nm_   = this->get_parameter("hil_constant_load_nm").as_double();
+    hil_virtual_stiffness_  = this->get_parameter("hil_virtual_stiffness").as_double();
+    hil_virtual_damping_    = this->get_parameter("hil_virtual_damping").as_double();
+    hil_quadratic_drag_     = this->get_parameter("hil_quadratic_drag").as_double();
+    hil_wave_amp_nm_        = this->get_parameter("hil_wave_amp_nm").as_double();
+    hil_wave_omega_rad_s_   = this->get_parameter("hil_wave_omega_rad_s").as_double();
+    hil_torque_clip_nm_     = this->get_parameter("hil_torque_clip_nm").as_double();
+    hil_feedback_timeout_s_ = this->get_parameter("hil_feedback_timeout_s").as_double();
+    hil_ramp_time_s_        = this->get_parameter("hil_ramp_time_s").as_double();
+    hil_engaged_            = this->get_parameter("hil_engaged_default").as_bool();
+    hil_load_topic_         = this->get_parameter("hil_load_topic").as_string();
+
+    if (mode_ == "hil") {
+      if (use_shadow_pid_) {
+        RCLCPP_INFO(this->get_logger(),
+          "HIL mode: forcing use_shadow_pid=false (real shaft is the integrator).");
+        use_shadow_pid_ = false;
+      }
+      shadow_sync_trajectory_ = false;
+    }
+
     // Timing derived quantities
     publish_dt_ = (rate_hz_ > 0.0) ? (1.0 / rate_hz_) : 0.01;
     solver_dt_  = (solver_rate_hz_ > 0.0) ? (1.0 / solver_rate_hz_) : 0.001;
@@ -155,33 +232,75 @@ public:
     build_chrono_system();
 
     // ── ROS interfaces ────────────────────────────────────────────────────────────────────────
-    effort_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
-      effort_topic_,
-      rclcpp::SensorDataQoS(),
-      [this](std_msgs::msg::Float64MultiArray::ConstSharedPtr msg) {
-        if (!msg->data.empty()) {
-          latest_torque_ = msg->data[0];
-        }
-      });
+    if (mode_ != "hil") {
+      // SIL/Parallel: subscribe to effort topic to get τ_cmd
+      effort_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
+        effort_topic_,
+        rclcpp::SensorDataQoS(),
+        [this](std_msgs::msg::Float64MultiArray::ConstSharedPtr msg) {
+          if (!msg->data.empty()) {
+            latest_torque_ = msg->data[0];
+          }
+        });
+    }
 
     pos_pub_          = this->create_publisher<std_msgs::msg::Float64>("~/sim_position",     10);
     vel_pub_          = this->create_publisher<std_msgs::msg::Float64>("~/sim_velocity",     10);
     accel_pub_        = this->create_publisher<std_msgs::msg::Float64>("~/sim_acceleration", 10);
     shadow_torque_pub_ = this->create_publisher<std_msgs::msg::Float64>("~/shadow_torque",   10);
 
-    if (sil_mode_) {
+    if (mode_ == "sil") {
       joint_state_pub_ = this->create_publisher<sensor_msgs::msg::JointState>(
         joint_state_topic_, 10);
       RCLCPP_INFO(this->get_logger(), "SIL mode: publishing %s (joint='%s')",
         joint_state_topic_.c_str(), joint_name_.c_str());
     } else {
-      // Parallel mode: publish sim joint states on a separate topic for the sim RSP / RViz overlay
+      // Parallel/HIL: publish sim joint states on a separate topic for the sim RSP / RViz overlay
       sim_joint_state_pub_ = this->create_publisher<sensor_msgs::msg::JointState>(
         "/sim_joint_states", 10);
     }
 
-    // Trajectory sync — works in both modes now
-    if (shadow_sync_trajectory_) {
+    if (mode_ == "hil") {
+      // HIL: subscribe to real /joint_states for measured θ/ω
+      hw_joint_state_sub_ = this->create_subscription<sensor_msgs::msg::JointState>(
+        "/joint_states",
+        rclcpp::SensorDataQoS(),
+        [this](sensor_msgs::msg::JointState::ConstSharedPtr msg) {
+          for (size_t i = 0; i < msg->name.size(); ++i) {
+            if (msg->name[i] == joint_name_) {
+              hw_pos_      = (i < msg->position.size()) ? msg->position[i] : 0.0;
+              hw_vel_      = (i < msg->velocity.size()) ? msg->velocity[i] : 0.0;
+              hw_stamp_    = msg->header.stamp;
+              hw_received_ = true;
+              break;
+            }
+          }
+        });
+
+      // HIL: publish load torque for hil_torque_mixer
+      hil_load_pub_ = this->create_publisher<std_msgs::msg::Float64>(hil_load_topic_, 10);
+
+      // HIL: engage service
+      engage_service_ = this->create_service<std_srvs::srv::SetBool>(
+        "~/engage_hil",
+        [this](
+          const std_srvs::srv::SetBool::Request::SharedPtr req,
+          std_srvs::srv::SetBool::Response::SharedPtr res) {
+          hil_engaged_ = req->data;
+          hil_ramp_start_time_ = this->now().seconds();
+          res->success = true;
+          res->message = hil_engaged_ ? "HIL load torque ENGAGED" : "HIL load torque DISENGAGED";
+          RCLCPP_INFO(this->get_logger(), "%s", res->message.c_str());
+        });
+
+      RCLCPP_INFO(this->get_logger(),
+        "HIL mode: subscribing to /joint_states, publishing load on '%s'. "
+        "Engage via: ros2 service call ~/engage_hil std_srvs/srv/SetBool \"{data: true}\"",
+        hil_load_topic_.c_str());
+    }
+
+    // Trajectory sync — works in SIL and Parallel modes only
+    if (shadow_sync_trajectory_ && mode_ != "hil") {
       pos_cmd_sub_ = this->create_subscription<std_msgs::msg::Float64>(
         "/velocity_pid_node/position_command",
         rclcpp::SensorDataQoS(),
@@ -211,17 +330,28 @@ public:
       });
 
     start_time_ = this->now();
+    hil_ramp_start_time_ = start_time_.seconds();
 
     RCLCPP_INFO(
       this->get_logger(),
-      "ChronoFlapNode started [sil_mode=%s, use_shadow_pid=%s, shadow_sync_trajectory=%s]: "
+      "ChronoFlapNode started [mode=%s, use_shadow_pid=%s, shadow_sync_trajectory=%s]: "
       "publish=%.0f Hz, solver=%.0f Hz (%d substeps), "
       "flap=%.3fx%.3f m / %.4f kg, damping=%.4f, stiffness=%.4f, bearing=%.4f, coulomb=%.4f",
-      sil_mode_ ? "true" : "false", use_shadow_pid_ ? "true" : "false",
+      mode_.c_str(), use_shadow_pid_ ? "true" : "false",
       shadow_sync_trajectory_ ? "true" : "false",
       rate_hz_, solver_rate_hz_, substeps_,
       flap_length_, flap_width_, flap_mass_,
       joint_damping_, joint_stiffness_, bearing_friction_, coulomb_friction_);
+  }
+
+  ~ChronoFlapNode()
+  {
+    // On shutdown: publish a final zero load torque in HIL mode for safety
+    if (mode_ == "hil" && hil_load_pub_) {
+      std_msgs::msg::Float64 zero;
+      zero.data = 0.0;
+      hil_load_pub_->publish(zero);
+    }
   }
 
   void run()
@@ -254,53 +384,115 @@ public:
       // Determine torque command for this tick
       double torque_cmd = 0.0;
       double shadow_torque = 0.0;
-      if (use_shadow_pid_) {
-        if (shadow_sync_trajectory_) {
-          if (shadow_pos_ref_received_ && shadow_vel_ref_received_) {
-            // Use references synced from velocity_pid_node topics
-            shadow_torque = shadow_pid_.compute(
-              sim_position_, sim_velocity_, shadow_ext_pos_ref_, shadow_ext_vel_ref_, publish_dt_);
-          } else {
-            // External refs not yet received — hold at zero until velocity_pid_node is ready
-            shadow_torque = shadow_pid_.compute(
-              sim_position_, sim_velocity_, 0.0, 0.0, publish_dt_);
+
+      if (mode_ == "hil") {
+        // ── HIL path ──────────────────────────────────────────────────────────────────────────
+        // Use measured hardware state; do NOT integrate Chrono dynamics for control.
+        const double now_s = this->now().seconds();
+        const double t     = now_s - start_time_.seconds();
+
+        // Watchdog: check hardware feedback freshness
+        bool feedback_ok = hw_received_;
+        if (hw_received_) {
+          const double age = (this->now() - hw_stamp_).seconds();
+          if (age > hil_feedback_timeout_s_) {
+            feedback_ok = false;
+            RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
+              "HIL: /joint_states stale (%.3f s > %.3f s timeout) — zeroing load torque.",
+              age, hil_feedback_timeout_s_);
           }
         } else {
-          const double t = (this->now() - start_time_).seconds();
-          shadow_torque = shadow_pid_.compute(sim_position_, sim_velocity_, t, publish_dt_);
+          RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 2000,
+            "HIL: waiting for /joint_states feedback...");
         }
-        torque_cmd    = shadow_torque;
+
+        double tau_hydro = 0.0;
+        if (feedback_ok) {
+          tau_hydro = compute_load_torque(hw_pos_, hw_vel_, t);
+
+          // Ramp gate
+          if (hil_engaged_) {
+            if (hil_ramp_time_s_ > 0.0) {
+              const double ramp_elapsed = now_s - hil_ramp_start_time_;
+              const double ramp_factor  = std::clamp(ramp_elapsed / hil_ramp_time_s_, 0.0, 1.0);
+              tau_hydro *= ramp_factor;
+            }
+          } else {
+            // Disengaged: ramp down
+            if (hil_ramp_time_s_ > 0.0) {
+              const double ramp_elapsed = now_s - hil_ramp_start_time_;
+              const double ramp_factor  = 1.0 - std::clamp(ramp_elapsed / hil_ramp_time_s_, 0.0, 1.0);
+              tau_hydro *= ramp_factor;
+            } else {
+              tau_hydro = 0.0;
+            }
+          }
+        }
+
+        // Publish load torque
+        std_msgs::msg::Float64 load_msg;
+        load_msg.data = tau_hydro;
+        hil_load_pub_->publish(load_msg);
+
+        // Update sim state from hardware measurements (no Chrono integration)
+        const double prev_vel = sim_velocity_;
+        sim_position_     = hw_received_ ? hw_pos_ : sim_position_;
+        sim_velocity_     = hw_received_ ? hw_vel_ : sim_velocity_;
+        sim_acceleration_ = (sim_velocity_ - prev_vel) / publish_dt_;
+
+        publish_kinematics(0.0);   // shadow_torque = 0 in HIL
+        publish_sim_joint_state(); // digital twin overlay for RViz
+
       } else {
-        torque_cmd = latest_torque_;
-      }
+        // ── SIL / Parallel path (unchanged) ───────────────────────────────────────────────────
+        if (use_shadow_pid_) {
+          if (shadow_sync_trajectory_) {
+            if (shadow_pos_ref_received_ && shadow_vel_ref_received_) {
+              // Use references synced from velocity_pid_node topics
+              shadow_torque = shadow_pid_.compute(
+                sim_position_, sim_velocity_, shadow_ext_pos_ref_, shadow_ext_vel_ref_, publish_dt_);
+            } else {
+              // External refs not yet received — hold at zero until velocity_pid_node is ready
+              shadow_torque = shadow_pid_.compute(
+                sim_position_, sim_velocity_, 0.0, 0.0, publish_dt_);
+            }
+          } else {
+            const double t = (this->now() - start_time_).seconds();
+            shadow_torque = shadow_pid_.compute(sim_position_, sim_velocity_, t, publish_dt_);
+          }
+          torque_cmd = shadow_torque;
+        } else {
+          torque_cmd = latest_torque_;
+        }
 
-      // Record velocity before sub-stepping for acceleration estimate
-      const double vel_before = sim_velocity_;
+        // Record velocity before sub-stepping for acceleration estimate
+        const double vel_before = sim_velocity_;
 
-      // Sub-step loop: τ_total = τ_cmd − (B_joint + B_bearing)·ω − C_coulomb·sign(ω) − K·θ
-      for (int i = 0; i < substeps_; ++i) {
-        const double angle  = motor_link_->GetMotorAngle();
-        const double omega  = motor_link_->GetMotorAngleDt();
-        const double total_damping = joint_damping_ + bearing_friction_;
-        const double coulomb = coulomb_friction_ * (omega > 0.0 ? 1.0 : (omega < 0.0 ? -1.0 : 0.0));
-        const double total_torque = torque_cmd
-                                   - total_damping  * omega
-                                   - coulomb
-                                   - joint_stiffness_ * angle;
-        torque_fn_->SetSetpoint(total_torque, sys_->GetChTime());
-        sys_->DoStepDynamics(solver_dt_);
-      }
+        // Sub-step loop: τ_total = τ_cmd − (B_joint + B_bearing)·ω − C_coulomb·sign(ω) − K·θ
+        for (int i = 0; i < substeps_; ++i) {
+          const double angle  = motor_link_->GetMotorAngle();
+          const double omega  = motor_link_->GetMotorAngleDt();
+          const double total_damping = joint_damping_ + bearing_friction_;
+          const double coulomb = coulomb_friction_ * (omega > 0.0 ? 1.0 : (omega < 0.0 ? -1.0 : 0.0));
+          const double total_torque = torque_cmd
+                                     - total_damping  * omega
+                                     - coulomb
+                                     - joint_stiffness_ * angle;
+          torque_fn_->SetSetpoint(total_torque, sys_->GetChTime());
+          sys_->DoStepDynamics(solver_dt_);
+        }
 
-      sim_position_     = motor_link_->GetMotorAngle();
-      sim_velocity_     = motor_link_->GetMotorAngleDt();
-      sim_acceleration_ = (sim_velocity_ - vel_before) / publish_dt_;
+        sim_position_     = motor_link_->GetMotorAngle();
+        sim_velocity_     = motor_link_->GetMotorAngleDt();
+        sim_acceleration_ = (sim_velocity_ - vel_before) / publish_dt_;
 
-      publish_kinematics(shadow_torque);
+        publish_kinematics(shadow_torque);
 
-      if (sil_mode_) {
-        publish_joint_state();
-      } else {
-        publish_sim_joint_state();
+        if (mode_ == "sil") {
+          publish_joint_state();
+        } else {
+          publish_sim_joint_state();
+        }
       }
 
       auto elapsed = clock::now() - t_start;
@@ -436,7 +628,8 @@ private:
   }
 
   static inline const std::set<std::string> kImmutableParams = {
-    "rate_hz", "solver_rate_hz", "effort_topic", "sil_mode", "joint_name", "joint_state_topic"};
+    "rate_hz", "solver_rate_hz", "effort_topic", "sil_mode", "mode",
+    "joint_name", "joint_state_topic", "hil_load_topic"};
 
   rcl_interfaces::msg::SetParametersResult on_validate_parameters(
     const std::vector<rclcpp::Parameter> & parameters)
@@ -502,6 +695,29 @@ private:
           return result;
         }
       }
+
+      // HIL: strict positive
+      static const std::set<std::string> kHilPositive = {
+        "hil_torque_clip_nm", "hil_feedback_timeout_s"};
+      if (kHilPositive.count(param.get_name())) {
+        if (param.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE || param.as_double() <= 0.0) {
+          result.successful = false;
+          result.reason = param.get_name() + " must be positive.";
+          return result;
+        }
+      }
+
+      // HIL: non-negative
+      static const std::set<std::string> kHilNonNeg = {
+        "hil_virtual_stiffness", "hil_virtual_damping", "hil_quadratic_drag",
+        "hil_wave_amp_nm", "hil_wave_omega_rad_s", "hil_ramp_time_s"};
+      if (kHilNonNeg.count(param.get_name())) {
+        if (param.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE || param.as_double() < 0.0) {
+          result.successful = false;
+          result.reason = param.get_name() + " must be non-negative.";
+          return result;
+        }
+      }
     }
     return result;
   }
@@ -527,6 +743,17 @@ private:
 
       // Shadow PID parameters — any change triggers re-read and reset
       else if (n.rfind("shadow_", 0) == 0) { shadow_pid_changed = true; }
+
+      // HIL runtime-tunable parameters
+      else if (n == "hil_constant_load_nm")   { hil_constant_load_nm_   = param.as_double(); }
+      else if (n == "hil_virtual_stiffness")  { hil_virtual_stiffness_  = param.as_double(); }
+      else if (n == "hil_virtual_damping")    { hil_virtual_damping_    = param.as_double(); }
+      else if (n == "hil_quadratic_drag")     { hil_quadratic_drag_     = param.as_double(); }
+      else if (n == "hil_wave_amp_nm")        { hil_wave_amp_nm_        = param.as_double(); }
+      else if (n == "hil_wave_omega_rad_s")   { hil_wave_omega_rad_s_   = param.as_double(); }
+      else if (n == "hil_torque_clip_nm")     { hil_torque_clip_nm_     = param.as_double(); }
+      else if (n == "hil_feedback_timeout_s") { hil_feedback_timeout_s_ = param.as_double(); }
+      else if (n == "hil_ramp_time_s")        { hil_ramp_time_s_        = param.as_double(); }
     }
 
     if (body_needs_update) {
@@ -540,6 +767,19 @@ private:
     if (shadow_pid_changed) {
       read_shadow_params();
     }
+  }
+
+  // ── HIL: compute hydrodynamic load torque from measured state ──────────────────────────────
+  // Stub: constant + linear spring/damper + quadratic drag + wave excitation.
+  // HydroChrono/SeaStack integration point: replace this function body only.
+  double compute_load_torque(double theta, double omega, double t) const
+  {
+    double tau = hil_constant_load_nm_
+               - hil_virtual_stiffness_  * theta
+               - hil_virtual_damping_    * omega
+               - hil_quadratic_drag_     * omega * std::abs(omega)
+               + hil_wave_amp_nm_ * std::sin(hil_wave_omega_rad_s_ * t);
+    return std::clamp(tau, -hil_torque_clip_nm_, hil_torque_clip_nm_);
   }
 
   // ── Publishing ───────────────────────────────────────────────────────────────────────────────
@@ -592,7 +832,8 @@ private:
   // ── Member variables ─────────────────────────────────────────────────────────────────────────
 
   // Mode & identity
-  bool        sil_mode_{false};
+  std::string mode_{"parallel"};      // "sil", "parallel", or "hil"
+  bool        sil_mode_{false};       // legacy alias: (mode_=="sil")
   std::string joint_name_{"motor_joint"};
   std::string joint_state_topic_{"/joint_states"};
   std::string effort_topic_{"/motor_effort_controller/commands"};
@@ -646,12 +887,34 @@ private:
   rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr effort_sub_;
   rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr           pos_cmd_sub_;
   rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr           vel_cmd_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr     hw_joint_state_sub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              pos_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              vel_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              accel_pub_;
   rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              shadow_torque_pub_;
+  rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr              hil_load_pub_;
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr        joint_state_pub_;
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr        sim_joint_state_pub_;
+  rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr                engage_service_;
+
+  // HIL state
+  double       hil_constant_load_nm_{0.1};
+  double       hil_virtual_stiffness_{0.0};
+  double       hil_virtual_damping_{0.0};
+  double       hil_quadratic_drag_{0.0};
+  double       hil_wave_amp_nm_{0.0};
+  double       hil_wave_omega_rad_s_{0.0};
+  double       hil_torque_clip_nm_{0.3};
+  double       hil_feedback_timeout_s_{0.1};
+  double       hil_ramp_time_s_{1.0};
+  bool         hil_engaged_{false};
+  double       hil_ramp_start_time_{0.0};
+  std::string  hil_load_topic_{"~/load_torque"};
+  // Hardware measurements (from /joint_states in HIL mode)
+  double       hw_pos_{0.0};
+  double       hw_vel_{0.0};
+  rclcpp::Time hw_stamp_;
+  bool         hw_received_{false};
 
   // Parameter callback handles
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr   on_set_handle_;

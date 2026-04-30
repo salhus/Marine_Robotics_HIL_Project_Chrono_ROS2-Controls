@@ -39,9 +39,11 @@ Both motors share the same ODrive board and CAN bus (`can0`). The second joint (
 ### Packages
 
 - **`hil_odrive_ros2_control`** (root package)
-  - Purpose: installs the launch file, controller YAML, and URDF/Xacro for `motor_joint` (axis0). `pto_joint` (axis1) is defined in the URDF but currently commented out.
+  - Purpose: installs the launch files, controller YAML, and URDF/Xacro for `motor_joint` (axis0). `pto_joint` (axis1) is defined in the URDF but currently commented out.
   - Key paths:
-    - `launch/motor_control.launch.py`
+    - `launch/motor_control.launch.py` — legacy parallel-mode bringup (now also launches rqt/plotjuggler/rviz)
+    - `launch/parallel_mode.launch.py` — canonical parallel-mode launcher with tooling
+    - `launch/hil_mode.launch.py` — HIL mode: real HW + velocity_pid_node + chrono_flap_node (mode=hil) + hil_torque_mixer + tooling
     - `config/controllers.yaml`
     - `description/urdf/motor.urdf.xacro` (real hardware — blue flap)
     - `description/urdf/motor_sim.urdf.xacro` (sim overlay — orange semi-transparent flap, different material names to work around RViz2 resource-sharing bug)
@@ -125,6 +127,29 @@ Note: `velocity_pid_node` is a standalone node — it is **not** a ros2_control 
 It reads from the joint state broadcaster's output topic and writes directly to the effort
 controller's command topic.
 
+In **HIL mode**, `velocity_pid_node`'s effort output is **remapped at launch time** from
+`/motor_effort_controller/commands` to `/velocity_pid_node/torque_command`. The
+`hil_torque_mixer_node` is the **only** node that writes to `/motor_effort_controller/commands`
+in HIL mode.
+
+### HIL mode data flow
+
+```
+/joint_states (encoder feedback)
+        │
+        ├──▶ velocity_pid_node ──/velocity_pid_node/torque_command────────────────────┐
+        │                                                                              │
+        └──▶ chrono_flap_node (mode=hil)                                             ▼
+               τ_hydro = f(θ_meas, ω_meas, t)                             hil_torque_mixer_node
+               ~/load_torque ─────────────────────────────────────▶    τ_total = clamp(
+                                                                           τ_pid + τ_hydro,
+                                                                           ±hard_clip_nm)
+                                                                                      │
+                                             /motor_effort_controller/commands ◄──────┘
+                                                                                      │
+                                                                               ODrive HW
+```
+
 > **SIL alternative:** For development without hardware, use the dedicated launch file:
 > ```bash
 > ros2 launch chrono_flap_sim sil_mode.launch.py
@@ -133,6 +158,44 @@ controller's command topic.
 > `velocity_pid_node` together — no ODrive, CAN bus, or motor required. See the root
 > [`README.md`](../../README.md#quick-start-sil-mode-no-hardware) for full details and RViz
 > visualization instructions.
+
+---
+
+## Launch files
+
+| Launch file | Mode | Description |
+|---|---|---|
+| `motor_control.launch.py` | Parallel | Legacy/explicit parallel-mode bringup. **Now also launches rqt_reconfigure, PlotJuggler, and RViz2 by default** (same as `parallel_mode.launch.py`). |
+| `parallel_mode.launch.py` | Parallel | Canonical parallel-mode launcher. Equivalent to `motor_control.launch.py` going forward. |
+| `hil_mode.launch.py` | HIL | HIL mode: real hardware + `velocity_pid_node` (effort topic remapped) + `chrono_flap_node` (mode=hil) + `hil_torque_mixer_node` + tooling. |
+
+All three launch files support the same tooling arguments:
+
+| Argument | Default | Description |
+|---|---|---|
+| `controllers_file` | `config/controllers.yaml` | Path to controller YAML |
+| `enable_visualization` | `false` | Enable Chrono 3D visualization window (requires Vulkan/GPU) |
+| `enable_rqt` | `true` | Launch `rqt_reconfigure` for live parameter editing |
+| `enable_plotjuggler` | `true` | Launch PlotJuggler for time-series plotting |
+| `enable_rviz` | `true` | Launch RViz2 for 3D visualization |
+| `rviz_config` | `""` | Path to `.rviz` config file (empty = defaults) |
+| `plotjuggler_layout` | `""` | Path to PlotJuggler `.xml` layout (empty = defaults) |
+
+Disable any tool: `ros2 launch hil_odrive_ros2_control parallel_mode.launch.py enable_rviz:=false`
+
+### HIL safety mechanisms
+
+`hil_mode.launch.py` engages safety at all levels:
+
+| Mechanism | Where | Behaviour |
+|---|---|---|
+| **Engage gate** | `chrono_flap_node` | Load torque starts at zero; engage via `ros2 service call /chrono_flap_node/engage_hil std_srvs/srv/SetBool "{data: true}"` |
+| **Ramp-in** | `chrono_flap_node` | When engaging, τ_hydro ramps linearly from 0 over `hil_ramp_time_s` (default 1.0 s) |
+| **Watchdog** | `chrono_flap_node` | If `/joint_states` goes stale for > `hil_feedback_timeout_s` (default 0.1 s), τ_hydro is forced to zero |
+| **Load clamp** | `chrono_flap_node` | τ_hydro is clamped to ±`hil_torque_clip_nm` (default 0.3 N·m) |
+| **Independent watchdogs** | `hil_torque_mixer_node` | PID input and load input each have separate timeout checks (default 0.2 s each) |
+| **Hard output clamp** | `hil_torque_mixer_node` | τ_total always clamped to ±`hard_clip_nm` (default 0.5 N·m) |
+| **Shutdown zero** | Both nodes | Final zero-command published on destructor |
 
 ---
 
@@ -292,16 +355,22 @@ You should see packages like:
 
 ## Run: bring up ros2_control + controllers
 
-Launch the WEC HIL dyno setup:
+Launch the WEC HIL dyno setup (parallel mode with tooling):
 
 ```bash
 source /opt/ros/jazzy/setup.bash
 source ~/ws/install/setup.bash
 
+ros2 launch hil_odrive_ros2_control parallel_mode.launch.py
+```
+
+The legacy `motor_control.launch.py` is equivalent and now also launches the same tooling by default:
+
+```bash
 ros2 launch hil_odrive_ros2_control motor_control.launch.py
 ```
 
-This launch file starts:
+Both launch files start:
 - `ros2_control_node`
 - `robot_state_publisher` (real hardware, `/robot_description`)
 - `sim_robot_state_publisher` (namespace `sim`, `/sim/robot_description`, loads `motor_sim.urdf.xacro`)
@@ -309,20 +378,16 @@ This launch file starts:
 - spawns/activates:
   - `joint_state_broadcaster`
   - `motor_effort_controller` (Motor 1, hydro emulator)
-- `velocity_pid_node` (cascade mode, `amplitude_rad_s=0.25`, `omega_rad_s=0.25`)
-- `chrono_flap_node` (parallel/shadow mode by default)
+- `velocity_pid_node`
+- `chrono_flap_node` (parallel/shadow mode)
+- `rqt_reconfigure`, `plotjuggler`, `rviz2` (each conditionally, default enabled)
 
-### Launch arguments
-
-| Argument | Default | Description |
-|---|---|---|
-| `controllers_file` | `config/controllers.yaml` | Path to controller YAML |
-| `enable_visualization` | `false` | Enable Chrono 3D visualization window (requires Vulkan/GPU and a Chrono build with VSG or Irrlicht) |
+See the [Launch files](#launch-files) section above for all arguments.
 
 To enable the Chrono 3D visualization window:
 
 ```bash
-ros2 launch hil_odrive_ros2_control motor_control.launch.py enable_visualization:=true
+ros2 launch hil_odrive_ros2_control parallel_mode.launch.py enable_visualization:=true
 ```
 
 ---

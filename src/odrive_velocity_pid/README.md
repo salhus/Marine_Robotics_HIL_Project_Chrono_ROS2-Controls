@@ -14,6 +14,12 @@ The node works identically whether `/joint_states` is published by real hardware
 it straightforward to develop and tune the controller entirely in simulation before connecting
 hardware.
 
+> **HIL mode note:** In HIL mode, `hil_mode.launch.py` remaps this node's effort output topic
+> at launch time from `/motor_effort_controller/commands` to `/velocity_pid_node/torque_command`.
+> A separate `hil_torque_mixer_node` then sums this PID torque with the simulated load torque
+> from `chrono_flap_node` before commanding the ODrive. No code change is needed in this node;
+> the remap is entirely in the launch file.
+
 ---
 
 ## SIL mode (no hardware)

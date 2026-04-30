@@ -181,11 +181,11 @@ private:
     rcl_interfaces::msg::SetParametersResult result;
     result.successful = true;
 
-    static const std::set<std::string> kImmutable = {
+    static const std::set<std::string> kImmutableParams = {
       "pid_torque_topic", "load_torque_topic", "output_topic", "output_rate_hz"};
 
     for (const auto & param : parameters) {
-      if (kImmutable.count(param.get_name())) {
+      if (kImmutableParams.count(param.get_name())) {
         result.successful = false;
         result.reason = "Parameter '" + param.get_name() + "' cannot be changed at runtime.";
         return result;

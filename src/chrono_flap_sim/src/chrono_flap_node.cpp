@@ -697,9 +697,9 @@ private:
       }
 
       // HIL: strict positive
-      static const std::set<std::string> kHilPositive = {
+      static const std::set<std::string> kHilPositiveParams = {
         "hil_torque_clip_nm", "hil_feedback_timeout_s"};
-      if (kHilPositive.count(param.get_name())) {
+      if (kHilPositiveParams.count(param.get_name())) {
         if (param.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE || param.as_double() <= 0.0) {
           result.successful = false;
           result.reason = param.get_name() + " must be positive.";
@@ -708,10 +708,10 @@ private:
       }
 
       // HIL: non-negative
-      static const std::set<std::string> kHilNonNeg = {
+      static const std::set<std::string> kHilNonNegativeParams = {
         "hil_virtual_stiffness", "hil_virtual_damping", "hil_quadratic_drag",
         "hil_wave_amp_nm", "hil_wave_omega_rad_s", "hil_ramp_time_s"};
-      if (kHilNonNeg.count(param.get_name())) {
+      if (kHilNonNegativeParams.count(param.get_name())) {
         if (param.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE || param.as_double() < 0.0) {
           result.successful = false;
           result.reason = param.get_name() + " must be non-negative.";

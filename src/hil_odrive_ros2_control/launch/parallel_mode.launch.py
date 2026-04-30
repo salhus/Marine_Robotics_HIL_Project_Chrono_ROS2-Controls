@@ -9,29 +9,25 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
+    """
+    Parallel/shadow mode launch file.
+
+    Brings up the full hardware stack (ros2_control_node, controllers, robot_state_publisher,
+    sim_robot_state_publisher, static TF) plus velocity_pid_node and chrono_flap_node in
+    parallel mode (sil_mode=false, mode=parallel).
+
+    This is equivalent to motor_control.launch.py but adds rqt_reconfigure, plotjuggler,
+    and rviz2. The original motor_control.launch.py is NOT modified.
+    """
     declared_arguments = []
 
     declared_arguments.append(
         DeclareLaunchArgument(
-            "bearing_friction",
-            default_value="0.01",
-            description="Bearing friction coefficient for the Chrono simulation.",
-        )
-    )
-
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "control_mode",
-            default_value="cascade",
-            description="Control mode for the velocity PID node.",
-        )
-    )
-
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "position_setpoint",
-            default_value="0.0",
-            description="Position setpoint (rad) for the velocity PID node in position_only mode.",
+            "controllers_file",
+            default_value=PathJoinSubstitution(
+                [FindPackageShare("hil_odrive_ros2_control"), "config", "controllers.yaml"]
+            ),
+            description="Path to the ros2_control controllers YAML file.",
         )
     )
 
@@ -83,9 +79,7 @@ def generate_launch_description():
         )
     )
 
-    bearing_friction = LaunchConfiguration("bearing_friction")
-    control_mode = LaunchConfiguration("control_mode")
-    position_setpoint = LaunchConfiguration("position_setpoint")
+    controllers_file = LaunchConfiguration("controllers_file")
     enable_visualization = LaunchConfiguration("enable_visualization")
     enable_rqt = LaunchConfiguration("enable_rqt")
     enable_plotjuggler = LaunchConfiguration("enable_plotjuggler")
@@ -104,10 +98,59 @@ def generate_launch_description():
     )
     robot_description = {"robot_description": ParameterValue(robot_description_content, value_type=str)}
 
+    sim_robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("hil_odrive_ros2_control"), "description", "urdf", "motor_sim.urdf.xacro"]
+            ),
+        ]
+    )
+    sim_robot_description = {"robot_description": ParameterValue(sim_robot_description_content, value_type=str)}
+
+    control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[robot_description, controllers_file],
+        output="both",
+    )
+
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         parameters=[robot_description],
+        output="both",
+    )
+
+    sim_robot_state_pub_node = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="sim_robot_state_publisher",
+        namespace="sim",
+        parameters=[sim_robot_description, {"frame_prefix": "sim/"}],
+        remappings=[("joint_states", "/sim_joint_states")],
+        output="both",
+    )
+
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        output="both",
+    )
+
+    effort_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["motor_effort_controller", "--controller-manager", "/controller_manager"],
+        output="both",
+    )
+
+    velocity_pid_node = Node(
+        package="odrive_velocity_pid",
+        executable="velocity_pid_node",
+        name="velocity_pid_node",
         output="both",
     )
 
@@ -116,22 +159,18 @@ def generate_launch_description():
         executable="chrono_flap_node",
         name="chrono_flap_node",
         parameters=[{
-            "sil_mode": True,
-            "mode": "sil",
-            "bearing_friction": bearing_friction,
+            "sil_mode": False,
+            "mode": "parallel",
             "enable_visualization": enable_visualization,
         }],
         output="both",
     )
 
-    velocity_pid_node = Node(
-        package="odrive_velocity_pid",
-        executable="velocity_pid_node",
-        name="velocity_pid_node",
-        parameters=[{
-            "control_mode": control_mode,
-            "position_setpoint": position_setpoint,
-        }],
+    # Identity transform: sim/base_link overlaid exactly on base_link (x y z yaw pitch roll)
+    static_tf_sim = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=["0", "0", "0", "0", "0", "0", "base_link", "sim/base_link"],
         output="both",
     )
 
@@ -164,12 +203,16 @@ def generate_launch_description():
     return LaunchDescription(
         declared_arguments
         + [
+            control_node,
             robot_state_pub_node,
-            chrono_flap_node,
+            sim_robot_state_pub_node,
+            joint_state_broadcaster_spawner,
+            effort_controller_spawner,
             velocity_pid_node,
+            chrono_flap_node,
+            static_tf_sim,
             rqt_node,
             plotjuggler_node,
             rviz_node,
         ]
     )
-

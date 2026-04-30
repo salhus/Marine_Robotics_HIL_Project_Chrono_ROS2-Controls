@@ -1,9 +1,11 @@
 # chrono_flap_sim
 
 ROS 2 C++ package that runs a **Project Chrono** multibody simulation of an inverted-pendulum
-flap on a revolute joint. The node supports two operating modes — **SIL** (Software-in-the-Loop,
-no hardware required) and **parallel/shadow** (runs alongside real ODrive hardware for model
-validation) — and exposes all physical parameters for online reconfiguration via `rqt_reconfigure`.
+flap on a revolute joint. The node supports three operating modes — **SIL** (Software-in-the-Loop,
+no hardware required), **parallel/shadow** (runs alongside real ODrive hardware for model
+validation), and **HIL** (Hardware-in-the-Loop: real motor + encoder + controller form the
+primary loop; Chrono evaluates a hydrodynamic load torque from measured state) — and exposes
+all physical parameters for online reconfiguration via `rqt_reconfigure`.
 
 In both SIL and parallel modes, the node runs an internal **shadow PID controller** that closes the
 simulation loop using `sim_position` / `sim_velocity` as feedback, mirroring the exact same
@@ -35,10 +37,14 @@ the Chrono sim flap in RViz simultaneously.
 
 ### Operating modes
 
-| Mode | `sil_mode` | Publishes `/joint_states` | Role |
-|---|---|---|---|
-| **SIL** | `true` | ✓ at `rate_hz` | Acts as the plant; shadow PID drives Chrono, `velocity_pid_node` torque available for comparison |
-| **Parallel** | `false` (default) | ✗ | Shadows the real hardware; publishes `~/sim_*` for comparison |
+| Mode | `mode` param | `sil_mode` | Publishes `/joint_states` | Role |
+|---|---|---|---|---|
+| **SIL** | `"sil"` | `true` | ✓ at `rate_hz` | Acts as the plant; shadow PID drives Chrono, `velocity_pid_node` torque available for comparison |
+| **Parallel** | `"parallel"` (default) | `false` | ✗ | Shadows the real hardware; publishes `~/sim_*` for comparison |
+| **HIL** | `"hil"` | N/A | ✗ | Evaluates τ_hydro from measured (θ, ω); publishes `~/load_torque`; no Chrono dynamics integration for control |
+
+The legacy `sil_mode` bool is kept for backward compatibility: if `mode` is unset, `sil_mode=true`
+selects SIL and `sil_mode=false` selects parallel. If both are set and inconsistent, `mode` wins.
 
 ---
 
@@ -421,10 +427,10 @@ When `use_shadow_pid=true`, divergence in position/velocity traces indicates mod
 
 ```bash
 # Build both packages (odrive_velocity_pid provides pid_controller.hpp):
-colcon build --packages-select odrive_velocity_pid chrono_flap_sim
+colcon build --packages-select odrive_velocity_pid chrono_flap_sim hil_torque_mixer
 
 # With VSG visualization (if Chrono was built with VSG support):
-colcon build --packages-select odrive_velocity_pid chrono_flap_sim \
+colcon build --packages-select odrive_velocity_pid chrono_flap_sim hil_torque_mixer \
   --cmake-args -DCMAKE_PREFIX_PATH=/path/to/chrono/install
 ```
 
@@ -432,3 +438,57 @@ colcon build --packages-select odrive_velocity_pid chrono_flap_sim \
 appropriate compile definition (`CHRONO_VSG` or `CHRONO_IRRLICHT`). If neither is found, the node
 builds without visualization support; attempting `enable_visualization:=true` at runtime will log
 a warning and continue headlessly.
+
+---
+
+## HIL mode
+
+See [`doc/hil_mode.md`](doc/hil_mode.md) for the full design document, causality diagram,
+commissioning procedure, and HydroChrono integration plan.
+
+### Quick start
+
+```bash
+ros2 launch hil_odrive_ros2_control hil_mode.launch.py
+```
+
+Then engage the load torque:
+
+```bash
+ros2 service call /chrono_flap_node/engage_hil std_srvs/srv/SetBool "{data: true}"
+```
+
+### HIL parameters
+
+| Parameter | Default | Mutable | Description |
+|---|---|---|---|
+| `hil_constant_load_nm` | `0.1` | ✓ | Stub constant load torque bias (N·m) |
+| `hil_virtual_stiffness` | `0.0` | ✓ | Virtual spring stiffness (N·m/rad), ≥ 0 |
+| `hil_virtual_damping` | `0.0` | ✓ | Virtual damping (N·m·s/rad), ≥ 0 |
+| `hil_quadratic_drag` | `0.0` | ✓ | Quadratic drag coefficient, ≥ 0 |
+| `hil_wave_amp_nm` | `0.0` | ✓ | Wave excitation amplitude (N·m), ≥ 0 |
+| `hil_wave_omega_rad_s` | `0.0` | ✓ | Wave excitation frequency (rad/s), ≥ 0 |
+| `hil_torque_clip_nm` | `0.3` | ✓ | Hard clamp on τ_hydro published by this node (N·m), > 0 |
+| `hil_feedback_timeout_s` | `0.1` | ✓ | Watchdog timeout on /joint_states freshness (s), > 0 |
+| `hil_ramp_time_s` | `1.0` | ✓ | Ramp-in time when engaging (s), ≥ 0 |
+| `hil_engaged_default` | `false` | ✗ | Whether to engage load torque at startup (default false for safety) |
+| `hil_load_topic` | `~/load_torque` | ✗ | Topic on which τ_hydro is published |
+
+### HIL service
+
+| Service | Type | Description |
+|---|---|---|
+| `~/engage_hil` | `std_srvs/SetBool` | Engage (`data: true`) or disengage (`data: false`) the load torque with ramp-in |
+
+### Note on HydroChrono swap-in
+
+To replace the stub with a full HydroChrono / SeaStack model, only the body of
+`compute_load_torque(double theta, double omega, double t)` in `chrono_flap_node.cpp` needs
+to change. All topics, watchdogs, safety logic, and the engage service remain unchanged.
+
+### Note on future active PTO (axis1)
+
+When axis1 becomes active, only the mixer's `output_topic` parameter changes (or the load
+torque is published directly to axis1's effort topic and the mixer is bypassed for axis1).
+No logic changes in `chrono_flap_node`.
+

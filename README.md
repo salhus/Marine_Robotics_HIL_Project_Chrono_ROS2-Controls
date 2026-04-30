@@ -45,6 +45,41 @@ ODrive HW ──/joint_states──▶ velocity_pid_node ──/motor_effort_con
                                                           ~/sim_acceleration
 ```
 
+### HIL mode (`mode:=hil`) — Hardware-in-the-Loop
+
+The real motor + encoder + `velocity_pid_node` form the primary control loop. `chrono_flap_node`
+evaluates a hydrodynamic load torque `τ_hydro` from measured shaft state (no Chrono dynamics
+integration for control). `hil_torque_mixer_node` sums `τ_pid + τ_hydro` with independent
+watchdogs and a hard safety clamp before commanding the ODrive.
+
+```
+/joint_states (encoder feedback)
+        │
+        ├──▶ velocity_pid_node ──/velocity_pid_node/torque_command──────────────────────┐
+        │                                                                                │
+        └──▶ chrono_flap_node (mode=hil)                                               ▼
+               τ_hydro = f(θ_meas, ω_meas, t)   # stub; HydroChrono later     hil_torque_mixer
+               ~/load_torque ──────────────────────────────────────────────▶    τ_total = clamp(
+                                                                                  τ_pid + τ_hydro,
+                                                                                  ±hard_clip_nm)
+                                                                                        │
+                                                             /motor_effort_controller/commands
+                                                                                        │
+                                                                                   ODrive HW
+```
+
+Engage load torque (default: disengaged for safety):
+
+```bash
+ros2 service call /chrono_flap_node/engage_hil std_srvs/srv/SetBool "{data: true}"
+```
+
+Launch:
+
+```bash
+ros2 launch hil_odrive_ros2_control hil_mode.launch.py
+```
+
 ---
 
 ## Quick start: SIL mode (no hardware)

@@ -640,7 +640,7 @@ Results from parameter identification on the 30 cm × 30 cm acrylic flap test be
 
 | Property | Value | Method |
 |---|---|---|
-| Flap mass | 0.5 kg | Parameter identification |
+| Flap mass | 0.197 kg | Parameter identification |
 | Joint stiffness (restoring spring) | 0.712441 N·m/rad | Parameter identification |
 | Bearing friction (unpowered ODrive) | 0.2 N·m·s/rad | Parameter identification |
 | Joint damping (powered ODrive) | 0.0 N·m·s/rad | Parameter identification |

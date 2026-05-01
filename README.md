@@ -206,27 +206,29 @@ ros2 service call /chrono_flap_node/engage_hil std_srvs/srv/SetBool "{data: fals
 
 ```
                     ┌─────────────────────┐
-  can0 ◄───────────┤   ODrive (1 board)   │
+  can0 ◄───────────┤   ODrive Board A     │
                     │                     │
                     │  axis0 (node_id=0)  │──── Motor 1: Hydro Emulator (motor_joint)
-                    │                     │         ║
-                    │                     │     shared shaft
-                    │                     │         ║
-                    │  axis1 (node_id=1)  │──── Motor 2: PTO passive damper (pto_joint)
+                    └─────────────────────┘         ║
+                                                 shared shaft
+                    ┌─────────────────────┐         ║
+  can0 ◄───────────┤   ODrive Board B     │
+                    │                     │
+                    │  axis0 (node_id=1)  │──── Motor 2: PTO passive damper (pto_joint)
                     └─────────────────────┘
 
-  velocity_pid_node ──τ_wave──▶ motor_effort_controller ──▶ ODrive axis0
+  velocity_pid_node ──τ_wave──▶ motor_effort_controller ──▶ ODrive Board A axis0
   (sine wave, hydro emulator)
 
-  ODrive axis1 configured as passive damper via odrivetool
+  ODrive Board B axis0 configured as passive damper via odrivetool
   (velocity mode, setpoint = 0, P-gain = damping coefficient B)
 
   Power measurement: electrical_power + mechanical_power state interfaces (via Get_Powers CAN broadcast)
 ```
 
-Both motors are on the **same ODrive board** (`can0`). axis0 = `node_id=0` (hydro emulator), axis1 = `node_id=1` (PTO).
+Both motors share the **same CAN interface** (`can0`) but reside on **separate ODrive boards**. Board A axis0 = `node_id=0` (hydro emulator), Board B axis0 = `node_id=1` (PTO).
 
-> **Note:** `pto_joint` (axis1) is shown above for conceptual completeness. It is currently **commented out** in `motor.urdf.xacro` and the `pto_effort_controller` spawner has been removed from the launch file. Only `motor_joint` (axis0) is active in the current configuration.
+> **Note:** `pto_joint` (Board B, node_id=1) is shown above for conceptual completeness. It is currently **commented out** in `motor.urdf.xacro` and the `pto_effort_controller` spawner has been removed from the launch file. Only `motor_joint` (Board A, node_id=0) is active in the current configuration.
 
 ---
 

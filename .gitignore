@@ -4,3 +4,8 @@ log/
 __pycache__/
 *.pyc
 *.pyo
+
+# colcon / ROS 2 workspace artifacts — never commit these
+/build/
+/install/
+/log/

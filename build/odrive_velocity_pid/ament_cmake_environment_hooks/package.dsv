@@ -1,4 +1,0 @@
-source;share/odrive_velocity_pid/local_setup.bash
-source;share/odrive_velocity_pid/local_setup.dsv
-source;share/odrive_velocity_pid/local_setup.sh
-source;share/odrive_velocity_pid/local_setup.zsh

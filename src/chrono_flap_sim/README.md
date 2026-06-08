@@ -255,6 +255,28 @@ ros2 launch hil_odrive_ros2_control motor_control.launch.py enable_visualization
 
 ---
 
+## 3D Visualization (VSG)
+
+When built with VSG support, `chrono_flap_node` can render the live
+Chrono multibody scene in a window. The visualization is **off by
+default** — enable per-launch:
+
+```bash
+ros2 launch chrono_flap_sim sil_mode.launch.py enable_visualization:=true
+# or, with hardware:
+ros2 launch hil_odrive_ros2_control parallel_mode.launch.py enable_visualization:=true
+ros2 launch hil_odrive_ros2_control hil_mode.launch.py      enable_visualization:=true
+```
+
+If the visualization is not what you expect (window doesn't open, opens
+then crashes, missing assets), see [`../../docs/VSG_SETUP.md`](../../docs/VSG_SETUP.md)
+for the complete setup procedure, env-var reference, and troubleshooting
+matrix. VSG needs three separate env vars (`CMAKE_PREFIX_PATH`,
+`LD_LIBRARY_PATH`, `VSG_FILE_PATH`) covering three independent discovery
+stages.
+
+---
+
 ## Parameters
 
 Parameters marked **Immutable** require a node restart; **Reconfigurable** parameters can be
@@ -418,7 +440,10 @@ When `use_shadow_pid=true`, divergence in position/velocity traces indicates mod
 ## Prerequisites
 
 - [Project Chrono](https://projectchrono.org) — core library (`ChronoEngine`).
-  Optional: VSG (`Chrono_vsg`) or Irrlicht (`Chrono_irrlicht`) module for 3D visualization.
+  Optional: VSG (`Chrono_vsg`) module for 3D visualization — see
+  [`../../docs/VSG_SETUP.md`](../../docs/VSG_SETUP.md) for setup. Irrlicht
+  (`Chrono_irrlicht`) is also supported by the build system but is
+  incompatible with C++20 in version 1.8.
 - ROS 2 Jazzy (or compatible).
 - `odrive_velocity_pid` package (provides `pid_controller.hpp`; built as a sibling package).
 
@@ -430,15 +455,19 @@ When `use_shadow_pid=true`, divergence in position/velocity traces indicates mod
 # Build both packages (odrive_velocity_pid provides pid_controller.hpp):
 colcon build --packages-select odrive_velocity_pid chrono_flap_sim hil_torque_mixer
 
-# With VSG visualization (if Chrono was built with VSG support):
-colcon build --packages-select odrive_velocity_pid chrono_flap_sim hil_torque_mixer \
-  --cmake-args -DCMAKE_PREFIX_PATH=/path/to/chrono/install
+# With VSG visualization — export the three VSG env vars first
+# (see ../../docs/VSG_SETUP.md), then a plain colcon build picks them up:
+colcon build --packages-select odrive_velocity_pid chrono_flap_sim hil_torque_mixer
 ```
 
-`CMakeLists.txt` automatically detects `Chrono_vsg` / `Chrono_irrlicht` targets and adds the
-appropriate compile definition (`CHRONO_VSG` or `CHRONO_IRRLICHT`). If neither is found, the node
-builds without visualization support; attempting `enable_visualization:=true` at runtime will log
-a warning and continue headlessly.
+`CMakeLists.txt` detects the VSG headers and libraries from
+`CMAKE_PREFIX_PATH` (both the CMake variable and the environment
+variable — colcon passes it via the env var, so both are honored). When
+VSG is available the build defines `CHRONO_FLAP_USE_VSG` and links
+against `libChrono_vsg`, `libvsg`, and `libvsgXchange`. When VSG is
+unavailable the build cleanly falls back to headless without errors. See
+[`../../docs/VSG_SETUP.md`](../../docs/VSG_SETUP.md) for the full
+setup, env-var reference, and troubleshooting matrix.
 
 ---
 

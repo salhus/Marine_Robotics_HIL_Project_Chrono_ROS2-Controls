@@ -41,8 +41,7 @@ This starts `robot_state_publisher`, `chrono_flap_node` (with `sil_mode:=true`),
 ros2 launch chrono_flap_sim sil_mode.launch.py \
   bearing_friction:=0.3 \
   control_mode:=cascade \
-  position_setpoint:=0.8 \
-  enable_visualization:=false
+  position_setpoint:=0.8
 ```
 
 ### Alternative: manual launch (two terminals)

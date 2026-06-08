@@ -202,33 +202,60 @@ ros2 service call /chrono_flap_node/engage_hil std_srvs/srv/SetBool "{data: fals
 
 ---
 
+## 3D Visualization (VSG)
+
+`chrono_flap_node` can render the live Chrono multibody scene in a 3D
+window using Vulkan Scene Graph. This is **disabled by default** for
+headless safety; enable per-launch:
+
+```bash
+ros2 launch chrono_flap_sim sil_mode.launch.py               enable_visualization:=true
+ros2 launch hil_odrive_ros2_control parallel_mode.launch.py  enable_visualization:=true
+ros2 launch hil_odrive_ros2_control hil_mode.launch.py       enable_visualization:=true
+```
+
+VSG needs to be discoverable at **three independent stages** (build,
+runtime linker, runtime asset loader), each via a different environment
+variable. Missing any one produces a different failure at a different
+time. The full setup procedure, env-var reference, and troubleshooting
+matrix are in [`docs/VSG_SETUP.md`](docs/VSG_SETUP.md).
+
+Quick-reference env vars (full explanations in the setup doc):
+
+```bash
+export CMAKE_PREFIX_PATH=$HOME/Packages/vsg:$CMAKE_PREFIX_PATH                       # build
+export LD_LIBRARY_PATH=$HOME/Packages/vsg/lib:$LD_LIBRARY_PATH                       # link at runtime
+export VSG_FILE_PATH=/usr/local/share/chrono/data:$HOME/Packages/vsg/share/vsgExamples  # assets
+```
+
+---
+
 ## WEC HIL dyno concept
 
 ```
                     ┌─────────────────────┐
-  can0 ◄───────────┤   ODrive Board A     │
+  can0 ◄───────────┤   ODrive (1 board)   │
                     │                     │
                     │  axis0 (node_id=0)  │──── Motor 1: Hydro Emulator (motor_joint)
-                    └─────────────────────┘         ║
-                                                 shared shaft
-                    ┌─────────────────────┐         ║
-  can0 ◄───────────┤   ODrive Board B     │
-                    │                     │
-                    │  axis0 (node_id=1)  │──── Motor 2: PTO passive damper (pto_joint)
+                    │                     │         ║
+                    │                     │     shared shaft
+                    │                     │         ║
+                    │  axis1 (node_id=1)  │──── Motor 2: PTO passive damper (pto_joint)
                     └─────────────────────┘
 
-  velocity_pid_node ──τ_wave──▶ motor_effort_controller ──▶ ODrive Board A axis0
+  velocity_pid_node ──τ_wave──▶ motor_effort_controller ──▶ ODrive axis0
   (sine wave, hydro emulator)
 
-  ODrive Board B axis0 configured as passive damper via odrivetool
+  ODrive axis1 configured as passive damper via odrivetool
   (velocity mode, setpoint = 0, P-gain = damping coefficient B)
 
   Power measurement: electrical_power + mechanical_power state interfaces (via Get_Powers CAN broadcast)
 ```
 
-Both motors share the **same CAN interface** (`can0`) but reside on **separate ODrive boards**. Board A axis0 = `node_id=0` (hydro emulator), Board B axis0 = `node_id=1` (PTO).
+Both motors share the same ODrive board and CAN bus (`can0`). Axis0 = `node_id=0`
+(hydro emulator), axis1 = `node_id=1` (PTO).
 
-> **Note:** `pto_joint` (Board B, node_id=1) is shown above for conceptual completeness. It is currently **commented out** in `motor.urdf.xacro` and the `pto_effort_controller` spawner has been removed from the launch file. Only `motor_joint` (Board A, node_id=0) is active in the current configuration.
+> **Note:** `pto_joint` (axis1, node_id=1) is shown above for conceptual completeness. It is currently **commented out** in `motor.urdf.xacro` and the `pto_effort_controller` spawner has been removed from the launch file. Only `motor_joint` (axis0, node_id=0) is active in the current configuration.
 
 ---
 
@@ -284,13 +311,19 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-If Project Chrono was built with VSG (or Irrlicht) visualization support and is not on the
-system-wide CMake path, pass its install prefix via `CMAKE_PREFIX_PATH`:
+If Project Chrono was built with VSG visualization support (recommended),
+VSG needs three separate env vars exported before building and running.
+See [`docs/VSG_SETUP.md`](docs/VSG_SETUP.md) for the full setup and a
+troubleshooting matrix. The short version:
 
 ```bash
-colcon build --symlink-install \
-  --cmake-args -DCMAKE_PREFIX_PATH=/path/to/chrono/install
+export CMAKE_PREFIX_PATH=$HOME/Packages/vsg:$CMAKE_PREFIX_PATH
+export LD_LIBRARY_PATH=$HOME/Packages/vsg/lib:$LD_LIBRARY_PATH
+export VSG_FILE_PATH=/usr/local/share/chrono/data:$HOME/Packages/vsg/share/vsgExamples
 ```
+
+Then a normal `colcon build` will pick everything up — no extra
+`--cmake-args` are needed.
 
 To rebuild a single package after making changes:
 
@@ -640,7 +673,7 @@ Results from parameter identification on the 30 cm × 30 cm acrylic flap test be
 
 | Property | Value | Method |
 |---|---|---|
-| Flap mass | 0.197 kg | Parameter identification |
+| Flap mass | 0.21 kg | Parameter identification |
 | Joint stiffness (restoring spring) | 0.712441 N·m/rad | Parameter identification |
 | Bearing friction (unpowered ODrive) | 0.2 N·m·s/rad | Parameter identification |
 | Joint damping (powered ODrive) | 0.0 N·m·s/rad | Parameter identification |
@@ -667,6 +700,9 @@ ros2 run chrono_flap_sim chrono_flap_node --ros-args \
 | Motor not moving | `torque_limit_nm` too low to overcome friction | Increase `torque_limit_nm` |
 | `/joint_states` has NaN velocity | Wrong ODrive node ID in URDF | Update `node_id` in `description/urdf/motor.urdf.xacro` |
 | Controller type not found | `ros-jazzy-ros2-controllers` not installed | `sudo apt-get install ros-jazzy-ros2-controllers` |
+| VSG window never opens / log says `Visualization disabled by parameter` | `enable_visualization` is false | Launch with `enable_visualization:=true` |
+| VSG `Failed to read font : vsg/fonts/OpenSans-Bold.vsgb` + exit code -11 | `VSG_FILE_PATH` doesn't include Chrono's data dir | Add `/usr/local/share/chrono/data` to `VSG_FILE_PATH`; see [`docs/VSG_SETUP.md`](docs/VSG_SETUP.md) |
+| Build error: `fatal error: vsg/all.h: No such file or directory` | `CMAKE_PREFIX_PATH` missing VSG, or stale CMake cache | Export env var; `rm -rf build/chrono_flap_sim install/chrono_flap_sim`; rebuild. See [`docs/VSG_SETUP.md`](docs/VSG_SETUP.md) |
 
 ---
 
@@ -687,6 +723,7 @@ Phase 2 will add a **pluggable PTO control framework** for comparing WEC control
 
 ## Sub-package documentation
 
+- [`docs/VSG_SETUP.md`](docs/VSG_SETUP.md) — Vulkan Scene Graph (VSG) 3D visualizer: install, env-var setup, troubleshooting matrix
 - [`src/chrono_flap_sim/README.md`](src/chrono_flap_sim/README.md) — Project Chrono flap simulation: physics model, SIL vs parallel modes, all parameters, published topics, and build instructions
 - [`src/hil_odrive_ros2_control/README.md`](src/hil_odrive_ros2_control/README.md) — hardware launch, URDF configuration, CAN node ID setup, and detailed controller bring-up steps
 - [`src/odrive_velocity_pid/README.md`](src/odrive_velocity_pid/README.md) — cascaded PID node: control modes, all parameters, published topics, and safety features

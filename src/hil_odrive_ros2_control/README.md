@@ -183,6 +183,12 @@ All three launch files support the same tooling arguments:
 
 Disable any tool: `ros2 launch hil_odrive_ros2_control parallel_mode.launch.py enable_rviz:=false`
 
+> **VSG visualization:** Passing `enable_visualization:=true` requires
+> Project Chrono to be built with VSG support and the three VSG env vars
+> (`CMAKE_PREFIX_PATH`, `LD_LIBRARY_PATH`, `VSG_FILE_PATH`) exported in
+> the shell you launch from. See [`../../docs/VSG_SETUP.md`](../../docs/VSG_SETUP.md)
+> for the complete setup procedure and troubleshooting.
+
 ### HIL safety mechanisms
 
 `hil_mode.launch.py` engages safety at all levels:
@@ -331,13 +337,12 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-If Project Chrono was built with VSG (or Irrlicht) visualization support, pass its install
-prefix so CMake can find it:
-
-```bash
-colcon build --symlink-install \
-  --cmake-args -DCMAKE_PREFIX_PATH=/path/to/chrono/install
-```
+If Project Chrono was built with VSG visualization support, export the
+three VSG env vars (`CMAKE_PREFIX_PATH`, `LD_LIBRARY_PATH`,
+`VSG_FILE_PATH`) before building — colcon will pick them up
+automatically, no `--cmake-args` are needed. See
+[`../../docs/VSG_SETUP.md`](../../docs/VSG_SETUP.md) for the full
+procedure.
 
 ### Confirm packages are discoverable by colcon
 ```bash

@@ -518,7 +518,7 @@ private:
     flap_ = std::make_shared<ChBody>();
     update_flap_inertia();
     flap_vis_shape_ = std::make_shared<ChVisualShapeBox>(
-      flap_width_, kFlapVisDepth, flap_length_);
+      kFlapVisDepth, flap_width_, flap_length_);
     flap_->AddVisualShape(flap_vis_shape_);
     sys_->AddBody(flap_);
 
@@ -760,7 +760,7 @@ private:
       update_flap_inertia();
       if (flap_->GetVisualModel()) { flap_->GetVisualModel()->Clear(); }
       flap_vis_shape_ = std::make_shared<ChVisualShapeBox>(
-        flap_width_, kFlapVisDepth, flap_length_);
+	 kFlapVisDepth, flap_width_,  flap_length_);
       flap_->AddVisualShape(flap_vis_shape_);
     }
 

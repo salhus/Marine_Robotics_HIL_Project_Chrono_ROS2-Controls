@@ -9,3 +9,8 @@ __pycache__/
 /build/
 /install/
 /log/
+
+# colcon / ROS 2 workspace artifacts — never commit these
+/build/
+/install/
+/log/

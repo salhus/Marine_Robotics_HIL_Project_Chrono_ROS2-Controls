@@ -49,8 +49,8 @@ elseif(_vis_backend STREQUAL "vsg" OR (_vis_backend STREQUAL "auto" AND Chrono_V
     # read both and also include common system install prefixes.
     set(_vsg_search_prefixes ${CMAKE_PREFIX_PATH})
     if(DEFINED ENV{CMAKE_PREFIX_PATH})
-      # The env var is OS-PATH-style (':' on Unix); convert to a CMake list.
-      string(REPLACE ":" ";" _env_prefixes "$ENV{CMAKE_PREFIX_PATH}")
+      # The env var is OS-PATH-style; convert to a CMake list.
+      file(TO_CMAKE_PATH "$ENV{CMAKE_PREFIX_PATH}" _env_prefixes)
       list(APPEND _vsg_search_prefixes ${_env_prefixes})
     endif()
     list(APPEND _vsg_search_prefixes /usr/local /usr)

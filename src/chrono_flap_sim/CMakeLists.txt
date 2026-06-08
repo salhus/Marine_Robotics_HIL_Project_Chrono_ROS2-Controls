@@ -43,16 +43,33 @@ if(_vis_backend STREQUAL "none")
   message(STATUS "chrono_flap_sim: Visualization disabled (CHRONO_VIS_BACKEND=none) - running headless")
 elseif(_vis_backend STREQUAL "vsg" OR (_vis_backend STREQUAL "auto" AND Chrono_VSG_AVAILABLE))
   if(Chrono_VSG_AVAILABLE)
-    find_library(CHRONO_VSG_LIB Chrono_vsg HINTS /usr/local/lib)
+    # Build the list of search prefixes. CMake does NOT auto-populate the
+    # CMake variable CMAKE_PREFIX_PATH from the environment variable of the
+    # same name. colcon passes workspace prefixes via the env var, so we must
+    # read both and also include common system install prefixes.
+    set(_vsg_search_prefixes ${CMAKE_PREFIX_PATH})
+    if(DEFINED ENV{CMAKE_PREFIX_PATH})
+      # The env var is OS-PATH-style; convert to a CMake list.
+      file(TO_CMAKE_PATH "$ENV{CMAKE_PREFIX_PATH}" _env_prefixes)
+      list(APPEND _vsg_search_prefixes ${_env_prefixes})
+    endif()
+    list(APPEND _vsg_search_prefixes /usr/local /usr)
+    list(REMOVE_DUPLICATES _vsg_search_prefixes)
+
+    # Matching lib HINTS for find_library calls.
+    set(_vsg_lib_hints "")
+    foreach(_p ${_vsg_search_prefixes})
+      list(APPEND _vsg_lib_hints "${_p}/lib")
+    endforeach()
+
+    find_library(CHRONO_VSG_LIB Chrono_vsg HINTS ${_vsg_lib_hints})
     if(CHRONO_VSG_LIB)
       message(STATUS "chrono_flap_sim: Found Chrono_vsg at ${CHRONO_VSG_LIB}")
-      list(APPEND LIBS ${CHRONO_VSG_LIB})
-      set(_use_vsg TRUE)
 
-      # Find VSG include dir from CMAKE_PREFIX_PATH.
+      # Find VSG include dir.
       # Do NOT link vsg::vsg imported target - it may re-enable format definitions.
       set(_VSG_INCLUDE_DIR "")
-      foreach(_prefix ${CMAKE_PREFIX_PATH})
+      foreach(_prefix ${_vsg_search_prefixes})
         if(EXISTS "${_prefix}/include/vsg/all.h")
           set(_VSG_INCLUDE_DIR "${_prefix}/include")
           break()
@@ -62,13 +79,30 @@ elseif(_vis_backend STREQUAL "vsg" OR (_vis_backend STREQUAL "auto" AND Chrono_V
       if(_VSG_INCLUDE_DIR)
         message(STATUS "chrono_flap_sim: Found VSG headers at ${_VSG_INCLUDE_DIR}")
         set(VSG_EXTRA_INCLUDES ${_VSG_INCLUDE_DIR})
-      else()
-        message(WARNING "chrono_flap_sim: Chrono_vsg found but vsg/all.h not found. Set CMAKE_PREFIX_PATH to the vsg install prefix.")
-      endif()
 
-      find_library(_VSGXCHANGE_LIB vsgXchange HINTS /usr/local/lib)
-      if(_VSGXCHANGE_LIB)
-        list(APPEND LIBS ${_VSGXCHANGE_LIB})
+        # Headers AND Chrono_vsg both present — commit to a VSG build.
+        list(APPEND LIBS ${CHRONO_VSG_LIB})
+        set(_use_vsg TRUE)
+
+        # libvsg may live next to the headers (not in /usr/local/lib),
+        # in which case we need to surface it explicitly for the linker.
+        find_library(_VSG_LIB vsg HINTS ${_vsg_lib_hints})
+        if(_VSG_LIB)
+          message(STATUS "chrono_flap_sim: Found libvsg at ${_VSG_LIB}")
+          list(APPEND LIBS ${_VSG_LIB})
+        endif()
+
+        find_library(_VSGXCHANGE_LIB vsgXchange HINTS ${_vsg_lib_hints})
+        if(_VSGXCHANGE_LIB)
+          message(STATUS "chrono_flap_sim: Found libvsgXchange at ${_VSGXCHANGE_LIB}")
+          list(APPEND LIBS ${_VSGXCHANGE_LIB})
+        endif()
+      else()
+        message(WARNING
+          "chrono_flap_sim: Chrono_vsg found but vsg/all.h not found in any of: "
+          "${_vsg_search_prefixes}. Falling back to headless build. "
+          "Set -DCMAKE_PREFIX_PATH=<vsg install prefix> or export "
+          "CMAKE_PREFIX_PATH=<vsg install prefix> to enable VSG visualization.")
       endif()
     else()
       message(STATUS "chrono_flap_sim: Chrono_VSG_AVAILABLE but Chrono_vsg library not found - running headless")

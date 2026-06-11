@@ -24,11 +24,20 @@ find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
+# Chrono 10's Chrono::Chrono_vsg target lists vsg::vsg, vsgXchange::vsgXchange,
+# and vsgImGui::vsgImGui in its link interface. We must define all three as
+# imported targets BEFORE find_package(Chrono) materializes Chrono_vsg, even
+# though we deliberately avoid linking against vsg::vsg directly (see VSG
+# section below — there are reasons we instead use find_library() to surface
+# libvsg.so manually).
+find_package(vsg QUIET)
+find_package(vsgXchange QUIET)
+find_package(vsgImGui QUIET)
 find_package(Chrono REQUIRED)
 find_package(odrive_velocity_pid REQUIRED)
 
 # Collect libraries
-list(APPEND LIBS Chrono_core)
+list(APPEND LIBS Chrono::Chrono_core)
 
 set(CHRONO_VIS_BACKEND "auto" CACHE STRING
   "Visualization backend: auto (VSG only), vsg, none. \
@@ -62,9 +71,17 @@ elseif(_vis_backend STREQUAL "vsg" OR (_vis_backend STREQUAL "auto" AND Chrono_V
       list(APPEND _vsg_lib_hints "${_p}/lib")
     endforeach()
 
-    find_library(CHRONO_VSG_LIB Chrono_vsg HINTS ${_vsg_lib_hints})
+    # Prefer the namespaced imported target (Chrono 10); fall back to raw lib lookup.
+    if(TARGET Chrono::Chrono_vsg)
+      set(CHRONO_VSG_LIB Chrono::Chrono_vsg)
+      message(STATUS "chrono_flap_sim: Using Chrono::Chrono_vsg imported target")
+    else()
+      find_library(CHRONO_VSG_LIB Chrono_vsg HINTS ${_vsg_lib_hints})
+      if(CHRONO_VSG_LIB)
+        message(STATUS "chrono_flap_sim: Found Chrono_vsg at ${CHRONO_VSG_LIB}")
+      endif()
+    endif()
     if(CHRONO_VSG_LIB)
-      message(STATUS "chrono_flap_sim: Found Chrono_vsg at ${CHRONO_VSG_LIB}")
 
       # Find VSG include dir.
       # Do NOT link vsg::vsg imported target - it may re-enable format definitions.
@@ -144,7 +161,7 @@ endif()
 
 target_include_directories(chrono_flap_node PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CHRONO_INCLUDE_DIRS}
+  # Note: include dirs come transitively from Chrono::Chrono_core (imported target).
   ${EIGEN3_INCLUDE_DIR}
   ${VSG_EXTRA_INCLUDES}
 )

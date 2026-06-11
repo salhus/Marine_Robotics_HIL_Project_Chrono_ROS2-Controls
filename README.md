@@ -322,6 +322,15 @@ export LD_LIBRARY_PATH=$HOME/Packages/vsg/lib:$LD_LIBRARY_PATH
 export VSG_FILE_PATH=/usr/local/share/chrono/data:$HOME/Packages/vsg/share/vsgExamples
 ```
 
+> **Building against a local Chrono tree (no `sudo make install`)?**
+> The env vars above assume Chrono was installed to `/usr/local`. If
+> your Chrono lives only in `~/project-chrono/build/` — required for
+> [SEA-Stack](https://github.com/Project-SEA-Stack/SEA-Stack) interop,
+> which needs `-DCH_USE_SIMD=OFF` — you'll need an additional
+> `Chrono_DIR` export plus a slightly different `VSG_FILE_PATH`. See
+> [`docs/local-chrono-build.md`](docs/local-chrono-build.md) for the
+> full local-build env-var block and gotchas.
+
 Then a normal `colcon build` will pick everything up — no extra
 `--cmake-args` are needed.
 
@@ -724,6 +733,7 @@ Phase 2 will add a **pluggable PTO control framework** for comparing WEC control
 ## Sub-package documentation
 
 - [`docs/VSG_SETUP.md`](docs/VSG_SETUP.md) — Vulkan Scene Graph (VSG) 3D visualizer: install, env-var setup, troubleshooting matrix
+- [`docs/local-chrono-build.md`](docs/local-chrono-build.md) — Building against a local Chrono tree (no `sudo make install`); env-var setup required for SEA-Stack interop with `CH_USE_SIMD=OFF`
 - [`src/chrono_flap_sim/README.md`](src/chrono_flap_sim/README.md) — Project Chrono flap simulation: physics model, SIL vs parallel modes, all parameters, published topics, and build instructions
 - [`src/hil_odrive_ros2_control/README.md`](src/hil_odrive_ros2_control/README.md) — hardware launch, URDF configuration, CAN node ID setup, and detailed controller bring-up steps
 - [`src/odrive_velocity_pid/README.md`](src/odrive_velocity_pid/README.md) — cascaded PID node: control modes, all parameters, published topics, and safety features

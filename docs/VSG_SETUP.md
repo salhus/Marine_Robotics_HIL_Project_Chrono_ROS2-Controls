@@ -59,6 +59,16 @@ sudo cmake --install build
 `sudo make install` is what places Chrono's VSG data assets (the font that
 trips up the visualizer at runtime) under `/usr/local/share/chrono/data/`.
 
+> **Not using `sudo make install`?**
+> If you're building Chrono locally without installing system-wide (e.g.
+> for [SEA-Stack](https://github.com/Project-SEA-Stack/SEA-Stack) interop,
+> which requires `-DCH_USE_SIMD=OFF`), see
+> [`local-chrono-build.md`](local-chrono-build.md) for the env-var setup
+> that points at the build tree instead of `/usr/local`. The VSG-side
+> setup in this doc still applies — the local-build doc covers what
+> changes on the Chrono side (`Chrono_DIR`, `LD_LIBRARY_PATH`,
+> `VSG_FILE_PATH`).
+
 ### 4. Sanity check before continuing
 
 ```bash
